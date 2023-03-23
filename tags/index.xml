@@ -5,6 +5,34 @@
     <link>http://kshnsink.github.io/tags/</link>
     <description>Recent content in Tags on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="http://kshnsink.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Thu, 23 Mar 2023 01:20:31 +0530</lastBuildDate><atom:link href="http://kshnsink.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>dummy</title>
+      <link>http://kshnsink.github.io/tags/dummy/</link>
+      <pubDate>Thu, 23 Mar 2023 01:20:31 +0530</pubDate>
+      
+      <guid>http://kshnsink.github.io/tags/dummy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>post</title>
+      <link>http://kshnsink.github.io/tags/post/</link>
+      <pubDate>Thu, 23 Mar 2023 01:20:31 +0530</pubDate>
+      
+      <guid>http://kshnsink.github.io/tags/post/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>GKE</title>
+      <link>http://kshnsink.github.io/tags/gke/</link>
+      <pubDate>Thu, 23 Mar 2023 01:17:57 +0530</pubDate>
+      
+      <guid>http://kshnsink.github.io/tags/gke/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

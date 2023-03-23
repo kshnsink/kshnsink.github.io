@@ -2,14 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://kshnsink.github.io/archives/</loc>
-  </url><url>
-    <loc>http://kshnsink.github.io/categories/</loc>
+    <loc>http://kshnsink.github.io/tags/dummy/</loc>
+    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.github.io/</loc>
+    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/tags/post/</loc>
+    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.github.io/posts/</loc>
+    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/posts/second-post/</loc>
+    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.github.io/tags/</loc>
+    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/categories/</loc>
+    <lastmod>2023-03-23T01:17:57+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/posts/extend-cidr/</loc>
+    <lastmod>2023-03-23T01:17:57+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/tags/gke/</loc>
+    <lastmod>2023-03-23T01:17:57+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/categories/gke/</loc>
+    <lastmod>2023-03-23T01:17:57+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/categories/gke-networking/</loc>
+    <lastmod>2023-03-23T01:17:57+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.github.io/archives/</loc>
   </url>
 </urlset>
