@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>kshnsink</title>
-    <link>http://kshnsink.github.io/</link>
-    <description>Recent content on kshnsink</description>
+    <title>Kishan&#39;s World</title>
+    <link>/</link>
+    <description>Recent content on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 19 Mar 2023 15:17:56 +0530</lastBuildDate><atom:link href="http://kshnsink.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Extend CIDR</title>
-      <link>http://kshnsink.github.io/posts/extend-cidr/</link>
-      <pubDate>Sun, 19 Mar 2023 15:17:56 +0530</pubDate>
-      
-      <guid>http://kshnsink.github.io/posts/extend-cidr/</guid>
-      <description>A VPC native cluster uses three unique subnet ranges to allocate IPs to Nodes, Pods and Services.
-Primary subnet IP address is used for Nodes. Node IP provides connectivity from control components like kube-proxy and kubelet to the Kubernetes API server. Node IP is the node’s connection to the rest of the cluster.
-Secondary subnet IP address is used for Pods. Pod IP addresses are natively routable within the cluster’s VPC network and other VPC networks connected to it by VPC Network Peering.</description>
-    </item>
+    <language>en-us</language><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
   </channel>
 </rss>
