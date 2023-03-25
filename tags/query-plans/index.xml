@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>query-plans on Kishan&#39;s World</title>
+    <link>http://kshnsink.com/tags/query-plans/</link>
+    <description>Recent content in query-plans on Kishan&#39;s World</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 26 Mar 2023 00:11:32 +0530</lastBuildDate><atom:link href="http://kshnsink.com/tags/query-plans/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Postgres Performance Tuning Manual: Query Plans</title>
+      <link>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</link>
+      <pubDate>Sun, 26 Mar 2023 00:11:32 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</guid>
+      <description>Is Postgres slowing down on you? Here&amp;#39;s how to identify areas of improvement using query plans</description>
+      <content:encoded><![CDATA[<p>Postgres is one of the most widely used open source databases in the world. At GOJEK, a lot of our products depend on Postgres as well. A lot of major companies use Postgres as their main database however when you&rsquo;re building and operating at scale, the volume of data passing through the pipelines can slow down the most efficient systems.</p>
+<p>To optimise things in order to enhace performace, we can target the brain of the database whhich is <em>optimizer</em>. Optimizer interprets queries and determines the fastest method of execution. A single query optimization technique can increase database performance drastically.</p>
+<p><img loading="lazy" src="/img/postgres-query-lifecycle.png" alt="postgres query lifecycle"  />
+</p>
+<p>This post outlines how to analyse Postgres performance using tools such as EXPLAIN and ANALYZE (which Postgres provides).</p>
+<h2 id="meet-explain-analyze">Meet EXPLAIN &amp; ANALYZE</h2>
+<p><code>EXPLAIN</code> gives an exact breakdown of a query. The execution plan is based on the statistics about the table, and it identifies the most efficient path to the data. This takes different database paradigms (such as indexes) into consideration. <code>EXPLAIN</code> only guesses a plan that it thinks it will execute.
+This is where <code>ANALYZE</code> comes into the picture. <code>ANALYZE</code> basically runs a query to find the processing time to execute a query.</p>
+<p>To quickly summarise, <code>EXPLAIN</code> and <code>ANALYZE</code> commands help improve database performance in Postgres by:</p>
+<blockquote>
+<p>a. <em>Displaying the execution plan that the PostgreSQL planner generates for the supplied statement.</em></p>
+<p>b. <em>Actually running the command to show the run time.</em></p>
+</blockquote>
+<h2 id="finding-the-framework">Finding the framework</h2>
+<p>Let&rsquo;s consider we have a table named <code>schemes</code>.</p>
+<p><code>EXPLAIN SELECT * FROM schemes;</code></p>
+<blockquote>
+<p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..64 rows=328 width=479)</em></p>
+</blockquote>
+<p><code>SELECT * FROM pg_class where relname = 'schemes';</code></p>
+<p><code>pg_class</code> has the metadata about the tables.</p>
+<p>Cost in the query plan is calculated using the following formula</p>
+<blockquote>
+<p><em>COST = (disk read pages x seq_page_cost) + (rows scanned x cpu_tuple_cost).</em></p>
+</blockquote>
+<ul>
+<li>Disk read pages and rows scanned are the properties of <code>pg_class</code>.</li>
+<li>Seq page cost is the estimated cost of disk read fetch.</li>
+<li>Cpu tuple cost is the estimated cost of processing each row.
+eg., COST (54 x 1.0) + (1000 x .01) = 64</li>
+</ul>
+<p>Let&rsquo;s see how the query plan changes when we apply filters in the select statement.
+<code>EXPLAIN SELECT * FROM schemes WHERE status = 'active';</code></p>
+<blockquote>
+<p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=960 width=384) Filter: ((status)::text = &lsquo;active&rsquo;::text)</em></p>
+</blockquote>
+<p>The estimated cost here is higher than the previous query, this is because Postgres is performing a seq scan over 1000 rows first and then filtering out the rows based on the <code>WHERE</code> clause.</p>
+<h2 id="planner-cost-constants">Planner cost constants</h2>
+<p>The cost variables described in this section are measured on an arbitrary scale. Only their relative values matter, hence scaling them all up or down by the same factor will result in no change in the planner&rsquo;s choices. By default, these cost variables are based on the cost of sequential page fetches; that is, seq_page_cost is conventionally set to 1.0 and the other cost variables are set with reference to that. But you can use a different scale if you prefer, such as actual execution times in milliseconds on a particular machine.</p>
+<p>Unfortunately, there is no well-defined method for determining ideal values for the cost variables. They are best treated as averages over the entire mix of queries that a particular installation will receive. This means that changing them on the basis of just a few experiments is very risky. <a href="https://www.postgresql.org/docs/current/runtime-config-query.html#RUNTIME-CONFIG-QUERY-CONSTANTS">Refer planner cost constants</a>].</p>
+<p><code>EXPLAIN SELECT schemes.rules FROM scheme_rules JOIN schemes ON (scheme_rules.scheme_id = schemes.id ) where scheme_name = 'weekend_scheme';</code>
+The query planner sometimes decides to use a two-step plan. The reason for using two-plan node is the first plan sorts the row locations identified by the index into physical order before reading them, and the other plan actually fetches those rows from the table.</p>
+<h2 id="down-to-the-nuts-andbolts">Down to the nuts and bolts</h2>
+<p>The first plan which does the sorting is called Bitmap scan.</p>
+<p>Most common occurring matches are scanned using the <code>seq scan</code> and the least common matches are scanned using <code>index scan</code>, anything in between is scanned using <code>bitmap heap scan</code> followed by an <code>index scan</code>. One of the reasons for this is that the random I/O is very slow as compared to sequential I/O. This is all driven by analysing statistics.</p>
+<h3 id="bitmap-heap-scan">Bitmap heap scan</h3>
+<p>A <a href="https://www.postgresql.org/docs/8.1/performance-tips.html">bitmap heap scan</a> is like a seq scan - the difference being, rather than visiting every disk page, it scans ANDs and ORs of the applicable index together and only visits the disk pages it needs to visit. This is different from index scan where the index is visited row by row in order, which results in disk pages being visited multiple times. A bitmap scan will sequentially open a short list of disk pages and grab every applicable row in each one.</p>
+<h3 id="sequential-scan-vs-index-scan">Sequential scan vs index scan</h3>
+<p>There are cases where a sequential scan is faster than an index scan. When reading data from a disk, a sequential method is usually faster than reading in random order. This is because an index scan requires several I/O for each row which includes looking up a row in the index, and based on that, looking up and retrieving the row from memory(heap). On the other hand, a sequential scan requires a single I/O operation to retrieve more than one block containing multiple rows.</p>
+<h2 id="query-plan-onjoins">Query plan on JOINS</h2>
+<p>The optimizer needs to pick the correct join algorithm when there are multiple tables to be joined in the select statement. Postgres uses three different kinds of join algorithms based on the type of join we are using.</p>
+<blockquote>
+<p><em>Let&rsquo;s dive in</em></p>
+</blockquote>
+<p><strong>Nested Loop</strong>: Here the planner can use either a sequential scan or index scan for each of the elements in the first table. The planner uses a sequential scan when the second table is small. The basic logic of choosing between a sequential scan and index scan applies here too.
+<strong>Hash Join</strong>: In this algorithm, the planner creates a hash table of the smaller table on the join key. The larger table is then scanned, searching the hash table for the rows which meet the join condition. This requires a lot of memory to store the hash table in the first place.
+<strong>Merge Join</strong>: This is similar to merge sort algorithm. Here the planner sorts both the tables to be joined on the join attribute. The tables are then scanned in parallel to find the matching values.</p>
+<blockquote>
+<p>Further reading on how we can use Explain/Analyze with join statements <a href="https://www.postgresql.org/docs/11/using-explain.html#USING-EXPLAIN-ANALYZE">here</a></p>
+</blockquote>
+<p>Postgres performance tuning is a complicated task. The complexity comes in identifying the appropriate &rsquo;tunable&rsquo; from the many tools that Postgres provides. As you might have now guessed, there is no silver bullet to solving performance issues in Postgres - it&rsquo;s the use case that dictates the tuning requirements. 😅</p>
+<p>Hope this helped. Keep following the blog for more updates! 🙂</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

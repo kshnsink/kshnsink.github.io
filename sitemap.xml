@@ -2,39 +2,53 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://kshnsink.github.io/tags/dummy/</loc>
-    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
+    <loc>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
   </url><url>
-    <loc>http://kshnsink.github.io/</loc>
-    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
+    <loc>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</loc>
+    <lastmod>2023-03-26T00:11:32+05:30</lastmod>
   </url><url>
-    <loc>http://kshnsink.github.io/tags/post/</loc>
-    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
-  </url><url>
-    <loc>http://kshnsink.github.io/posts/</loc>
-    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
-  </url><url>
-    <loc>http://kshnsink.github.io/posts/second-post/</loc>
-    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
-  </url><url>
-    <loc>http://kshnsink.github.io/tags/</loc>
-    <lastmod>2023-03-23T01:20:31+05:30</lastmod>
-  </url><url>
-    <loc>http://kshnsink.github.io/categories/</loc>
+    <loc>http://kshnsink.com/posts/extend-cidr/</loc>
     <lastmod>2023-03-23T01:17:57+05:30</lastmod>
   </url><url>
-    <loc>http://kshnsink.github.io/posts/extend-cidr/</loc>
+    <loc>http://kshnsink.com/categories/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/categories/database/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/tags/index/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/tags/postgres/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/categories/postgres/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/posts/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/tags/</loc>
+    <lastmod>2023-03-26T02:09:41+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/tags/query-plans/</loc>
+    <lastmod>2023-03-26T00:11:32+05:30</lastmod>
+  </url><url>
+    <loc>http://kshnsink.com/tags/gke/</loc>
     <lastmod>2023-03-23T01:17:57+05:30</lastmod>
   </url><url>
-    <loc>http://kshnsink.github.io/tags/gke/</loc>
+    <loc>http://kshnsink.com/categories/gke/</loc>
     <lastmod>2023-03-23T01:17:57+05:30</lastmod>
   </url><url>
-    <loc>http://kshnsink.github.io/categories/gke/</loc>
+    <loc>http://kshnsink.com/categories/gke-networking/</loc>
     <lastmod>2023-03-23T01:17:57+05:30</lastmod>
   </url><url>
-    <loc>http://kshnsink.github.io/categories/gke-networking/</loc>
-    <lastmod>2023-03-23T01:17:57+05:30</lastmod>
+    <loc>http://kshnsink.com/archives/</loc>
   </url><url>
-    <loc>http://kshnsink.github.io/archives/</loc>
+    <loc>http://kshnsink.com/search/</loc>
   </url>
 </urlset>

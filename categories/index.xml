@@ -2,27 +2,49 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Categories on Kishan&#39;s World</title>
-    <link>http://kshnsink.github.io/categories/</link>
+    <link>http://kshnsink.com/categories/</link>
     <description>Recent content in Categories on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Mar 2023 01:17:57 +0530</lastBuildDate><atom:link href="http://kshnsink.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Mar 2023 02:09:41 +0530</lastBuildDate><atom:link href="http://kshnsink.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Database</title>
+      <link>http://kshnsink.com/categories/database/</link>
+      <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/categories/database/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Postgres</title>
+      <link>http://kshnsink.com/categories/postgres/</link>
+      <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/categories/postgres/</guid>
+      <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+    </item>
+    
     <item>
       <title>GKE</title>
-      <link>http://kshnsink.github.io/categories/gke/</link>
+      <link>http://kshnsink.com/categories/gke/</link>
       <pubDate>Thu, 23 Mar 2023 01:17:57 +0530</pubDate>
       
-      <guid>http://kshnsink.github.io/categories/gke/</guid>
+      <guid>http://kshnsink.com/categories/gke/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>GKE-Networking</title>
-      <link>http://kshnsink.github.io/categories/gke-networking/</link>
+      <link>http://kshnsink.com/categories/gke-networking/</link>
       <pubDate>Thu, 23 Mar 2023 01:17:57 +0530</pubDate>
       
-      <guid>http://kshnsink.github.io/categories/gke-networking/</guid>
+      <guid>http://kshnsink.com/categories/gke-networking/</guid>
       <description></description>
+      <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
   </channel>
