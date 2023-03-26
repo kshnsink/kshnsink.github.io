@@ -29,12 +29,12 @@ This is where <code>ANALYZE</code> comes into the picture. <code>ANALYZE</code> 
 </blockquote>
 <h2 id="finding-the-framework">Finding the framework</h2>
 <p>Let&rsquo;s consider we have a table named <code>schemes</code>.</p>
-<p><code>EXPLAIN SELECT * FROM schemes;</code></p>
-<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes;
+</span></span></code></pre></div><blockquote>
 <p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..64 rows=328 width=479)</em></p>
 </blockquote>
-<p><code>SELECT * FROM pg_class where relname = 'schemes';</code></p>
-<p><code>pg_class</code> has the metadata about the tables.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> pg_class <span style="color:#66d9ef">where</span> relname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;schemes&#39;</span>;
+</span></span></code></pre></div><p><code>pg_class</code> has the metadata about the tables.</p>
 <p>Cost in the query plan is calculated using the following formula</p>
 <blockquote>
 <p><em>COST = (disk read pages x seq_page_cost) + (rows scanned x cpu_tuple_cost).</em></p>
@@ -45,17 +45,17 @@ This is where <code>ANALYZE</code> comes into the picture. <code>ANALYZE</code> 
 <li>Cpu tuple cost is the estimated cost of processing each row.
 eg., COST (54 x 1.0) + (1000 x .01) = 64</li>
 </ul>
-<p>Let&rsquo;s see how the query plan changes when we apply filters in the select statement.
-<code>EXPLAIN SELECT * FROM schemes WHERE status = 'active';</code></p>
-<blockquote>
+<p>Let&rsquo;s see how the query plan changes when we apply filters in the select statement.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;active&#39;</span>;
+</span></span></code></pre></div><blockquote>
 <p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=960 width=384) Filter: ((status)::text = &lsquo;active&rsquo;::text)</em></p>
 </blockquote>
 <p>The estimated cost here is higher than the previous query, this is because Postgres is performing a seq scan over 1000 rows first and then filtering out the rows based on the <code>WHERE</code> clause.</p>
 <h2 id="planner-cost-constants">Planner cost constants</h2>
 <p>The cost variables described in this section are measured on an arbitrary scale. Only their relative values matter, hence scaling them all up or down by the same factor will result in no change in the planner&rsquo;s choices. By default, these cost variables are based on the cost of sequential page fetches; that is, seq_page_cost is conventionally set to 1.0 and the other cost variables are set with reference to that. But you can use a different scale if you prefer, such as actual execution times in milliseconds on a particular machine.</p>
 <p>Unfortunately, there is no well-defined method for determining ideal values for the cost variables. They are best treated as averages over the entire mix of queries that a particular installation will receive. This means that changing them on the basis of just a few experiments is very risky. <a href="https://www.postgresql.org/docs/current/runtime-config-query.html#RUNTIME-CONFIG-QUERY-CONSTANTS">Refer planner cost constants</a>].</p>
-<p><code>EXPLAIN SELECT schemes.rules FROM scheme_rules JOIN schemes ON (scheme_rules.scheme_id = schemes.id ) where scheme_name = 'weekend_scheme';</code>
-The query planner sometimes decides to use a two-step plan. The reason for using two-plan node is the first plan sorts the row locations identified by the index into physical order before reading them, and the other plan actually fetches those rows from the table.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> schemes.rules <span style="color:#66d9ef">FROM</span> scheme_rules <span style="color:#66d9ef">JOIN</span> schemes <span style="color:#66d9ef">ON</span> (scheme_rules.scheme_id <span style="color:#f92672">=</span> schemes.id ) <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>;
+</span></span></code></pre></div><p>The query planner sometimes decides to use a two-step plan. The reason for using two-plan node is the first plan sorts the row locations identified by the index into physical order before reading them, and the other plan actually fetches those rows from the table.</p>
 <h2 id="down-to-the-nuts-andbolts">Down to the nuts and bolts</h2>
 <p>The first plan which does the sorting is called Bitmap scan.</p>
 <p>Most common occurring matches are scanned using the <code>seq scan</code> and the least common matches are scanned using <code>index scan</code>, anything in between is scanned using <code>bitmap heap scan</code> followed by an <code>index scan</code>. One of the reasons for this is that the random I/O is very slow as compared to sequential I/O. This is all driven by analysing statistics.</p>

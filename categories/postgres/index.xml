@@ -40,15 +40,15 @@ querying faster.</p>
 <li>When we create a unique constraint, Postgres automatically creates an index behind the scene.</li>
 </ul>
 <p>However, there are cases where even indexing can&rsquo;t improve performance. One such case is when we do case-insensitive searches. Let&rsquo;s understand the difference between the query cost in case of <em>case sensitive</em> and <em>case insensitive</em> search in our scheme table. Given we have an index on the column <code>scheme_name</code>.</p>
-<p><code>EXPLAIN ANALYSE SELECT * FROM schemes where scheme_name = 'weekend_scheme'</code></p>
-<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span> 
+</span></span></code></pre></div><blockquote>
 <p>QUERY PLAN | Index scan using idx_scheme_name on schemes
 (cost=0.28..8.29 rows=1 width=384)
 Planning Time: 0.155 ms
 Execution Time: 0.063ms</p>
 </blockquote>
-<p><code>EXPLAIN ANALYSE SELECT * FROM schemes where lower(scheme_name) = 'weekend_scheme'</code></p>
-<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">where</span> <span style="color:#66d9ef">lower</span>(scheme_name) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span> 
+</span></span></code></pre></div><blockquote>
 <p>QUERY PLAN | Seq Scan on schemes (cost=0.00..69.00 rows=5 width=384)
 Filter: (lower((scheme_name) :: text) = &lsquo;weekend_scheme&rsquo; :: text)
 Rows removed by filter: 999
@@ -61,9 +61,10 @@ Execution Time: 0.721ms</p>
 <li>LIKE <code>'%scheme'</code> will never use an index, but LIKE <code>'scheme%'</code> can possibly use the index.</li>
 <li>The upper/lower case function used in <code>where</code> clause.</li>
 </ul>
-<p>So whenever we want to use a function in our where clause, we could create the index in the following way to optimise the query. <code>CREATE INDEX idx_scheme_name ON schemes (lower(scheme_name))</code></p>
-<p><code>EXPLAIN ANALYSE SELECT * FROM schemes where lower(scheme_name) = 'weekend_scheme'</code></p>
-<blockquote>
+<p>So whenever we want to use a function in our where clause, we could create the index in the following way to optimise the query.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_scheme_name <span style="color:#66d9ef">ON</span> schemes (<span style="color:#66d9ef">lower</span>(scheme_name)) 
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">where</span> <span style="color:#66d9ef">lower</span>(scheme_name) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>
+</span></span></code></pre></div><blockquote>
 <p>QUERY PLAN | Bitmap heap scan on schemes ((cost=4.32..19.83 rows=5 width=384))
 Recheck cond: (lower ((scheme_name) :: text) = &lsquo;weekend_scheme&rsquo; :: text)
 Heap Blocks: exact=1
@@ -77,18 +78,18 @@ Execution Time: 0.079 ms</p>
 <h4 id="problem-statement-1">Problem statement</h4>
 <p>We want to return all the schemes which are supposed to run before 11:00 am.</p>
 <h4 id="solution-1">Solution</h4>
-<p><code>EXPLAIN ANALYSE SELECT * FROM schemes WHERE start_time &lt; '10:00:00'</code></p>
-<blockquote>
-<p>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=9 width=23)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;10:00:00&#39;</span>
+</span></span></code></pre></div><blockquote>
+<p>QUERYEXPLAIN ANALYSE SELECT * FROM schemes where lower(scheme_name) = &lsquo;weekend_scheme&rsquo; PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=9 width=23)
 Filter: (start_time &lt; &lsquo;10:00:00&rsquo;)
 Rows removed by filter: 991
 Planning Time: 0.082 ms
 Execution Time: 0.226 ms</p>
 </blockquote>
 <p>We can create an index on <code>start_time</code> column but assuming we have a huge database, this may not be optimal for insert, update and delete. So we create an index with a condition. This kind of indexing is used when we know what we need from our select queries. Say we do a heavy read on all the schemes which are started before 10:00:00 and not much when started later.</p>
-<p><code>CREATE INDEX idx_scheme_name ON schemes start_time WHERE start_time &lt; '11:00:00'</code></p>
-<p><code>EXPLAIN ANALYSE SELECT * FROM schemes WHERE start_time &lt; '10:00:00'</code></p>
-<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_scheme_name <span style="color:#66d9ef">ON</span> schemes start_time <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;11:00:00&#39;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;10:00:00&#39;</span>
+</span></span></code></pre></div><blockquote>
 <p>QUERY PLAN | Bitmap heap scan on schemes ((cost=4.21..29.30 rows=9 width=23))
 Recheck cond: (start_time &lt; &lsquo;10:00:00&rsquo;)
 Heap Blocks: exact=8
@@ -99,8 +100,8 @@ Execution Time: 0.075 ms</p>
 </blockquote>
 <p>This reduces the execution time from 0.226to 0.075.
 Let&rsquo;s validate that we have not indexed all the schemes where start_time is after 11:00 AM.</p>
-<p><code>EXPLAIN ANALYSE SELECT * FROM schemes WHERE start_time &gt;'12:00:00'</code></p>
-<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&gt;</span><span style="color:#e6db74">&#39;12:00:00&#39;</span>
+</span></span></code></pre></div><blockquote>
 <p>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=6 width=23)
 Filter: (start_time &lt; &lsquo;12:00:00&rsquo;)
 Rows removed by filter: 993
@@ -113,16 +114,16 @@ Execution Time: 0.228ms</p>
 <p><strong>Nested Loop</strong>: Here, the planner can use either sequential scan or index scan for each of the elements in the first table. The planner uses a sequential scan when the second table is small. The basic logic of choosing between a sequential scan and index scan applies here too.
 <strong>Hash Join</strong>: In this algorithm, the planner creates a hash table of the smaller table on the join key. The larger table is then scanned, searching the hash table for the rows which meet the join condition. This requires a lot of memory to store the hash table in the first place.
 <strong>Merge Join</strong>: This is similar to merge sort algorithm. Here the planner sorts both the tables to be joined on the join attribute. The tables are then scanned in parallel to find the matching values.</p>
-<p><code>EXPLAIN SELECT schemes.rules FROM scheme_rules JOIN schemes ON (scheme_rules.scheme_id = schemes.id ) where scheme_name = 'weekend_scheme';</code></p>
-<h2 id="downsides-of-indexes-in-production-environments">Downsides of indexes in production environments</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> schemes.rules <span style="color:#66d9ef">FROM</span> scheme_rules <span style="color:#66d9ef">JOIN</span> schemes <span style="color:#66d9ef">ON</span> (scheme_rules.scheme_id <span style="color:#f92672">=</span> schemes.id ) <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>;
+</span></span></code></pre></div><h2 id="downsides-of-indexes-in-production-environments">Downsides of indexes in production environments</h2>
 <h3 id="finding-unusedindexes">Finding unused indexes</h3>
 <p>In a large production environment, finding unused indexes is advisable, because indexes eat memory. <a href="https://wiki.postgresql.org/wiki/Index_Maintenance">Postgres wiki page</a> details how we can find index summary, duplicate indexes, and index size.</p>
 <h3 id="createdrop-index-vs-createdrop-index-concurrently">CREATE/DROP index vs CREATE/DROP index concurrently</h3>
 <p>Creating and dropping an index in a large database can take hours or even days and the <code>CREATE INDEX</code> command blocks all the writes on a table (it doesn&rsquo;t block the reads, but this is still not ideal).</p>
 <p>However, an index created concurrently with <code>CREATE INDEX</code> CONCURRENT will not acquire locks against writes. When creating index concurrently, Postgres first scans the table to build indexes and runs the index once again for the things to be added since the first pass.</p>
 <p>Creating an index concurrently also has a downside though. If something goes wrong during the process, it does not roll back, and leaves an invalid index behind. Invalid indexes can be found using the following query.</p>
-<p><code>SELECT * FROM pg_class, pg_index WHERE pg_index.indisvalid = false AND pg_index.indexrelid = pg_class.oid;</code></p>
-<h3 id="rebuilding-indexes">Rebuilding indexes</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> pg_class, pg_index <span style="color:#66d9ef">WHERE</span> pg_index.indisvalid <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span> <span style="color:#66d9ef">AND</span> pg_index.indexrelid <span style="color:#f92672">=</span> pg_class.oid;
+</span></span></code></pre></div><h3 id="rebuilding-indexes">Rebuilding indexes</h3>
 <p><a href="https://www.postgresql.org/docs/current/sql-reindex.html">REINDEX</a> rebuilds an index using the data stored in the index table, replacing the old copy of the index. If we suspect corruption of an index on a table, we can simply rebuild that index, or all indexes on the table, using <code>REINDEX INDEX</code> or <code>REINDEX TABLE</code></p>
 <p>REINDEX is similar to a drop and recreate of the index in that the index contents are rebuilt from scratch. However, locking considerations are rather different. REINDEX locks out writes but not reads of the index&rsquo;s parent table. It also takes an exclusive lock on the specific index being processed, which will block reads that attempt to use that index.</p>
 <blockquote>
@@ -163,12 +164,12 @@ This is where <code>ANALYZE</code> comes into the picture. <code>ANALYZE</code> 
 </blockquote>
 <h2 id="finding-the-framework">Finding the framework</h2>
 <p>Let&rsquo;s consider we have a table named <code>schemes</code>.</p>
-<p><code>EXPLAIN SELECT * FROM schemes;</code></p>
-<blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes;
+</span></span></code></pre></div><blockquote>
 <p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..64 rows=328 width=479)</em></p>
 </blockquote>
-<p><code>SELECT * FROM pg_class where relname = 'schemes';</code></p>
-<p><code>pg_class</code> has the metadata about the tables.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> pg_class <span style="color:#66d9ef">where</span> relname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;schemes&#39;</span>;
+</span></span></code></pre></div><p><code>pg_class</code> has the metadata about the tables.</p>
 <p>Cost in the query plan is calculated using the following formula</p>
 <blockquote>
 <p><em>COST = (disk read pages x seq_page_cost) + (rows scanned x cpu_tuple_cost).</em></p>
@@ -179,17 +180,17 @@ This is where <code>ANALYZE</code> comes into the picture. <code>ANALYZE</code> 
 <li>Cpu tuple cost is the estimated cost of processing each row.
 eg., COST (54 x 1.0) + (1000 x .01) = 64</li>
 </ul>
-<p>Let&rsquo;s see how the query plan changes when we apply filters in the select statement.
-<code>EXPLAIN SELECT * FROM schemes WHERE status = 'active';</code></p>
-<blockquote>
+<p>Let&rsquo;s see how the query plan changes when we apply filters in the select statement.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;active&#39;</span>;
+</span></span></code></pre></div><blockquote>
 <p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=960 width=384) Filter: ((status)::text = &lsquo;active&rsquo;::text)</em></p>
 </blockquote>
 <p>The estimated cost here is higher than the previous query, this is because Postgres is performing a seq scan over 1000 rows first and then filtering out the rows based on the <code>WHERE</code> clause.</p>
 <h2 id="planner-cost-constants">Planner cost constants</h2>
 <p>The cost variables described in this section are measured on an arbitrary scale. Only their relative values matter, hence scaling them all up or down by the same factor will result in no change in the planner&rsquo;s choices. By default, these cost variables are based on the cost of sequential page fetches; that is, seq_page_cost is conventionally set to 1.0 and the other cost variables are set with reference to that. But you can use a different scale if you prefer, such as actual execution times in milliseconds on a particular machine.</p>
 <p>Unfortunately, there is no well-defined method for determining ideal values for the cost variables. They are best treated as averages over the entire mix of queries that a particular installation will receive. This means that changing them on the basis of just a few experiments is very risky. <a href="https://www.postgresql.org/docs/current/runtime-config-query.html#RUNTIME-CONFIG-QUERY-CONSTANTS">Refer planner cost constants</a>].</p>
-<p><code>EXPLAIN SELECT schemes.rules FROM scheme_rules JOIN schemes ON (scheme_rules.scheme_id = schemes.id ) where scheme_name = 'weekend_scheme';</code>
-The query planner sometimes decides to use a two-step plan. The reason for using two-plan node is the first plan sorts the row locations identified by the index into physical order before reading them, and the other plan actually fetches those rows from the table.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> schemes.rules <span style="color:#66d9ef">FROM</span> scheme_rules <span style="color:#66d9ef">JOIN</span> schemes <span style="color:#66d9ef">ON</span> (scheme_rules.scheme_id <span style="color:#f92672">=</span> schemes.id ) <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>;
+</span></span></code></pre></div><p>The query planner sometimes decides to use a two-step plan. The reason for using two-plan node is the first plan sorts the row locations identified by the index into physical order before reading them, and the other plan actually fetches those rows from the table.</p>
 <h2 id="down-to-the-nuts-andbolts">Down to the nuts and bolts</h2>
 <p>The first plan which does the sorting is called Bitmap scan.</p>
 <p>Most common occurring matches are scanned using the <code>seq scan</code> and the least common matches are scanned using <code>index scan</code>, anything in between is scanned using <code>bitmap heap scan</code> followed by an <code>index scan</code>. One of the reasons for this is that the random I/O is very slow as compared to sequential I/O. This is all driven by analysing statistics.</p>
