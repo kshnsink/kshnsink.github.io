@@ -6,7 +6,131 @@
     <description>Recent content in GKE on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Mar 2023 01:17:57 +0530</lastBuildDate><atom:link href="http://kshnsink.com/categories/gke/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 09 Apr 2023 12:22:06 +0530</lastBuildDate><atom:link href="http://kshnsink.com/categories/gke/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Intro to Gateway API</title>
+      <link>http://kshnsink.com/posts/intro-to-gateway-api/</link>
+      <pubDate>Sun, 09 Apr 2023 12:22:06 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/intro-to-gateway-api/</guid>
+      <description>Gateway API in Kubernetes</description>
+      <content:encoded><![CDATA[<h2 id="ingress-vs-gateway-api">Ingress vs Gateway API</h2>
+<h3 id="ingress-supports-the-following">Ingress supports the following</h3>
+<ul>
+<li>HTTP host matching</li>
+<li>HTTP path matching</li>
+<li>TLS termination</li>
+<li>Routing to service:port</li>
+<li>For many different load balancer implementations</li>
+</ul>
+<h3 id="gateway-adds">Gateway adds</h3>
+<ul>
+<li>HTTP header-based matching</li>
+<li>HTTP header manipulation</li>
+<li>Weighted traffic splitting</li>
+<li>Traffic mirroring</li>
+<li>Role-oriented resource model</li>
+</ul>
+<h3 id="and-has-extensibility-for">and has extensibility for</h3>
+<ul>
+<li>Arbitrary backend CRD references (buckets, functions, etc)</li>
+<li>Routing for other protocols(gRPC)</li>
+<li>Custom parameters or configuration (LB algos, custom match types, etc)</li>
+</ul>
+<p>Gateway controller manage the network infrastructure on behalf of Gateway resources. There are one or more Gateway classes supported by a Gateway controller. Gateways are created from the Gateway classes and they model the actual network infrastructure which processes the traffic. Gateways can model many different kinds of data planes that perform routing.</p>
+<p>Then comes the route resources. Gateway and the HTTP route resources do what the ingress resource does as a single resource. This separation allows different roles to deploy and own that resource. It allows a cluster administrator to mange the Gateway and the policies attached to that Gateway, while individual development teams manage the routing to their application on their own.</p>
+<p><img loading="lazy" src="/img/gateway_02.png" alt="roles"  />
+</p>
+<h2 id="roles-involved">Roles involved</h2>
+<h3 id="infrastructure-provider">Infrastructure Provider</h3>
+<p>ensures that each cluster is provisioned with a <code>GatewayClass</code> ****for external load balancers</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">GatewayClass</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-lb</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">controller</span>: <span style="color:#ae81ff">mygroup.io/gateway</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">parametersRef</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">group</span>: <span style="color:#ae81ff">k8s.mygroup.io</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">GatewayClassParams</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-lb</span>
+</span></span></code></pre></div><h3 id="cluster-operator">Cluster Operator</h3>
+<p>Creates a <code>Gateway</code> for the mygroup team when setting up the cluster</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Gateway</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mygroup-external</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">gatewayClassName</span>: <span style="color:#ae81ff">external-lb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">listeners</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">HTTP</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">routes</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">HTTPRoute</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">matchLebels</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">gateway</span>: <span style="color:#ae81ff">mygroup-external</span>
+</span></span><span style="display:flex;"><span> 
+</span></span></code></pre></div><h3 id="application-developer">Application Developer</h3>
+<p>creates an HTTPRoute to route external traffic to the application</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">HTTPRoute</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mygroup</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">gateway</span>: <span style="color:#ae81ff">mygroup-external</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">hostnames</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#ae81ff">mygroup.io</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">matches</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">path</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">value</span>: <span style="color:#ae81ff">/groups</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">forwardTo</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">mygroup-groups</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">port</span>: <span style="color:#ae81ff">8080</span>
+</span></span></code></pre></div><h3 id="features">Features</h3>
+<h3 id="canary-rollout">Canary Rollout</h3>
+<p>Application developer wants to do a canary rollout</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">HTTPRoute</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">matches</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">path</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">value</span>: <span style="color:#ae81ff">/groups</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">forwardTo</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">mygroup-groups</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">port</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">weight</span>: <span style="color:#ae81ff">90</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">mygroup-groups-canary</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">port</span>: <span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">weight</span>: <span style="color:#ae81ff">10</span>
+</span></span></code></pre></div><h3 id="upgrade-load-balancer">Upgrade Load Balancer</h3>
+<p>Cluster operator wants to upgrade to the newest kind of LB</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Gateway</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mygroup-external</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">gatewayClassName</span>: <span style="color:#ae81ff">new-external-lb</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">listeners</span>:
+</span></span><span style="display:flex;"><span>    - <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">HTTP</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">routes</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">HTTPRoute</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">matchLebels</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#f92672">gateway</span>: <span style="color:#ae81ff">mygroup-external</span>
+</span></span></code></pre></div><h3 id="update-infrastructure-provider">Update Infrastructure Provider</h3>
+<p>Infrastructure provider wants to provision on a new provider</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">GatewayClass</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-lb</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">controller</span>: <span style="color:#ae81ff">new-vendor.io/gateway</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">parametersRef</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">group</span>: <span style="color:#ae81ff">k8s.mygroup.io</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">GatewayClassParams</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">name</span>: <span style="color:#ae81ff">external-lb</span>
+</span></span></code></pre></div>]]></content:encoded>
+    </item>
+    
     <item>
       <title>Extend CIDR</title>
       <link>http://kshnsink.com/posts/extend-cidr/</link>
