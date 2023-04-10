@@ -86,7 +86,7 @@
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">forwardTo</span>:
 </span></span><span style="display:flex;"><span>            <span style="color:#f92672">serviceName</span>: <span style="color:#ae81ff">mygroup-groups</span>
 </span></span><span style="display:flex;"><span>            <span style="color:#f92672">port</span>: <span style="color:#ae81ff">8080</span>
-</span></span></code></pre></div><h3 id="features">Features</h3>
+</span></span></code></pre></div><h2 id="features">Features</h2>
 <h3 id="canary-rollout">Canary Rollout</h3>
 <p>Application developer wants to do a canary rollout</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">HTTPRoute</span>
