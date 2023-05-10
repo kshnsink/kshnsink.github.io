@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tuning Postgres using Indexes on Kishan&#39;s World</title>
+    <link>http://kshnsink.com/series/tuning-postgres-using-indexes/</link>
+    <description>Recent content in Tuning Postgres using Indexes on Kishan&#39;s World</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 26 Mar 2023 02:09:41 +0530</lastBuildDate><atom:link href="http://kshnsink.com/series/tuning-postgres-using-indexes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Postgres Performance Tuning Manual: Indexes</title>
+      <link>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</link>
+      <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</guid>
+      <description>How to modify and improve query times in Postgres with the help of indexes.</description>
+      <content:encoded><![CDATA[<p>In this post, we look at how to overcome slow queries by analysing them with <code>Explain</code> and <code>Analyze</code>, and using indexes to modify and enhance the query timings.</p>
+<p>Postgres supports different kinds of indexing on the table for
+querying faster.</p>
+<h2 id="multiple-columnindexes">Multiple column indexes</h2>
+<p>A <a href="https://www.postgresql.org/docs/9.6/indexes-multicolumn.html">multi-column B-Tree index</a> can be used with query conditions that involve any subset of the index&rsquo;s columns. This index is most efficient when there are constraints on the leading (leftmost) columns. The exact rule is that equality constraints on leading columns, plus any inequality constraints on the first column that does not have an equality constraint, will be used to limit the portion of the index that is scanned.</p>
+<h3 id="cover-index">Cover-Index</h3>
+<p>An index containing all the columns needed for a query, which is there in the select statement.</p>
+<h3 id="unique-index">Unique Index</h3>
+<p>A unique index is an index used to enforce uniqueness of a column&rsquo;s value or the uniqueness of a combined value of more than one column.</p>
+<blockquote>
+<p>One of the most misunderstood concepts around indexing is to understand where to use a primary key, unique constraint, or unique index. Let&rsquo;s understand this using a problem:</p>
+</blockquote>
+<h4 id="problem-statement">Problem statement</h4>
+<p>We require maximum performance with no duplicate data. Which is the better approach? Primary key, unique constraint or unique index?</p>
+<p><img loading="lazy" src="/img/postgres-index-thinking.jpeg" alt=" "  />
+</p>
+<h4 id="solution">Solution</h4>
+<blockquote>
+<p><em>Note: Multiple null values are not equal, so they are not considered as a duplicate record.</em></p>
+</blockquote>
+<ul>
+<li>Postgres automatically creates a <a href="https://www.postgresql.org/docs/9.4/indexes-unique.html">unique index</a> in the table when a primary key and unique constraint is defined in the table. Creating unique constraint then would be redundant, and unnecessarily creating indexes degrades the performance of Postgres. According to suggestions by the Postgres product team, create a unique constraint on the table and then there is no need to create a unique index on those columns.</li>
+<li>Postgres creates an index for the defined primary key itself</li>
+<li>When we create a unique constraint, Postgres automatically creates an index behind the scene.</li>
+</ul>
+<p>However, there are cases where even indexing can&rsquo;t improve performance. One such case is when we do case-insensitive searches. Let&rsquo;s understand the difference between the query cost in case of <em>case sensitive</em> and <em>case insensitive</em> search in our scheme table. Given we have an index on the column <code>scheme_name</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span> 
+</span></span></code></pre></div><blockquote>
+<p>QUERY PLAN | Index scan using idx_scheme_name on schemes
+(cost=0.28..8.29 rows=1 width=384)
+Planning Time: 0.155 ms
+Execution Time: 0.063ms</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">where</span> <span style="color:#66d9ef">lower</span>(scheme_name) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span> 
+</span></span></code></pre></div><blockquote>
+<p>QUERY PLAN | Seq Scan on schemes (cost=0.00..69.00 rows=5 width=384)
+Filter: (lower((scheme_name) :: text) = &lsquo;weekend_scheme&rsquo; :: text)
+Rows removed by filter: 999
+Planning Time: 0.119 ms
+Execution Time: 0.721ms</p>
+</blockquote>
+<p>Even though we have an index created at <code>scheme_name</code>, the function <code>lower</code> degrades the performance as it does an additional effort of converting all the values of <code>scheme_table</code> to lower case.</p>
+<p>Cases when an index is not used (although it is defined).</p>
+<ul>
+<li>LIKE <code>'%scheme'</code> will never use an index, but LIKE <code>'scheme%'</code> can possibly use the index.</li>
+<li>The upper/lower case function used in <code>where</code> clause.</li>
+</ul>
+<p>So whenever we want to use a function in our where clause, we could create the index in the following way to optimise the query.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_scheme_name <span style="color:#66d9ef">ON</span> schemes (<span style="color:#66d9ef">lower</span>(scheme_name)) 
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">where</span> <span style="color:#66d9ef">lower</span>(scheme_name) <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>
+</span></span></code></pre></div><blockquote>
+<p>QUERY PLAN | Bitmap heap scan on schemes ((cost=4.32..19.83 rows=5 width=384))
+Recheck cond: (lower ((scheme_name) :: text) = &lsquo;weekend_scheme&rsquo; :: text)
+Heap Blocks: exact=1
+Bitmap scan on schemes ((cost=0.00..4.32 rows=5 width=0))
+Index cond: (lower ((scheme_name) :: text) = &lsquo;weekend_scheme&rsquo; :: text)
+Planning Time: 1.784 ms
+Execution Time: 0.079 ms</p>
+</blockquote>
+<h3 id="partial-index">Partial Index</h3>
+<p>Postgres supports an index over a subset of the rows of a table (known as a partial index). It&rsquo;s often the best way to index our data if we want to repeatedly analyse rows that match a given <code>WHERE</code> clause. Let us see how we can enhance the performance of Postgres using partial indexing.</p>
+<h4 id="problem-statement-1">Problem statement</h4>
+<p>We want to return all the schemes which are supposed to run before 11:00 am.</p>
+<h4 id="solution-1">Solution</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;10:00:00&#39;</span>
+</span></span></code></pre></div><blockquote>
+<p>QUERYEXPLAIN ANALYSE SELECT * FROM schemes where lower(scheme_name) = &lsquo;weekend_scheme&rsquo; PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=9 width=23)
+Filter: (start_time &lt; &lsquo;10:00:00&rsquo;)
+Rows removed by filter: 991
+Planning Time: 0.082 ms
+Execution Time: 0.226 ms</p>
+</blockquote>
+<p>We can create an index on <code>start_time</code> column but assuming we have a huge database, this may not be optimal for insert, update and delete. So we create an index with a condition. This kind of indexing is used when we know what we need from our select queries. Say we do a heavy read on all the schemes which are started before 10:00:00 and not much when started later.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_scheme_name <span style="color:#66d9ef">ON</span> schemes start_time <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;11:00:00&#39;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;10:00:00&#39;</span>
+</span></span></code></pre></div><blockquote>
+<p>QUERY PLAN | Bitmap heap scan on schemes ((cost=4.21..29.30 rows=9 width=23))
+Recheck cond: (start_time &lt; &lsquo;10:00:00&rsquo;)
+Heap Blocks: exact=8
+Bitmap index scan on schemes ((cost=0.00..4.21 rows=9 width=0)
+Index cond: (start_time &lt; &lsquo;10:00:00&rsquo;)
+Planning Time: 1.729 ms
+Execution Time: 0.075 ms</p>
+</blockquote>
+<p>This reduces the execution time from 0.226to 0.075.
+Let&rsquo;s validate that we have not indexed all the schemes where start_time is after 11:00 AM.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">ANALYSE</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> start_time <span style="color:#f92672">&gt;</span><span style="color:#e6db74">&#39;12:00:00&#39;</span>
+</span></span></code></pre></div><blockquote>
+<p>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=6 width=23)
+Filter: (start_time &lt; &lsquo;12:00:00&rsquo;)
+Rows removed by filter: 993
+Planning Time: 0.101 ms
+Execution Time: 0.228ms</p>
+</blockquote>
+<p>This proves that partial data from schemes table is indexed and the rest of the data is not indexed. Our index size is very small and easy to maintain, helping in the maintaining task of reindexing.</p>
+<h2 id="query-plan-onjoins">Query plan on JOINS</h2>
+<p>The optimizer needs to pick the correct join algorithm when there are multiple tables to be joined in the select statement. Postgres uses 3 different kinds of join algorithm based on the type of join we are using.</p>
+<p><strong>Nested Loop</strong>: Here, the planner can use either sequential scan or index scan for each of the elements in the first table. The planner uses a sequential scan when the second table is small. The basic logic of choosing between a sequential scan and index scan applies here too.
+<strong>Hash Join</strong>: In this algorithm, the planner creates a hash table of the smaller table on the join key. The larger table is then scanned, searching the hash table for the rows which meet the join condition. This requires a lot of memory to store the hash table in the first place.
+<strong>Merge Join</strong>: This is similar to merge sort algorithm. Here the planner sorts both the tables to be joined on the join attribute. The tables are then scanned in parallel to find the matching values.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> schemes.rules <span style="color:#66d9ef">FROM</span> scheme_rules <span style="color:#66d9ef">JOIN</span> schemes <span style="color:#66d9ef">ON</span> (scheme_rules.scheme_id <span style="color:#f92672">=</span> schemes.id ) <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>;
+</span></span></code></pre></div><h2 id="downsides-of-indexes-in-production-environments">Downsides of indexes in production environments</h2>
+<h3 id="finding-unusedindexes">Finding unused indexes</h3>
+<p>In a large production environment, finding unused indexes is advisable, because indexes eat memory. <a href="https://wiki.postgresql.org/wiki/Index_Maintenance">Postgres wiki page</a> details how we can find index summary, duplicate indexes, and index size.</p>
+<h3 id="createdrop-index-vs-createdrop-index-concurrently">CREATE/DROP index vs CREATE/DROP index concurrently</h3>
+<p>Creating and dropping an index in a large database can take hours or even days and the <code>CREATE INDEX</code> command blocks all the writes on a table (it doesn&rsquo;t block the reads, but this is still not ideal).</p>
+<p>However, an index created concurrently with <code>CREATE INDEX</code> CONCURRENT will not acquire locks against writes. When creating index concurrently, Postgres first scans the table to build indexes and runs the index once again for the things to be added since the first pass.</p>
+<p>Creating an index concurrently also has a downside though. If something goes wrong during the process, it does not roll back, and leaves an invalid index behind. Invalid indexes can be found using the following query.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> pg_class, pg_index <span style="color:#66d9ef">WHERE</span> pg_index.indisvalid <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span> <span style="color:#66d9ef">AND</span> pg_index.indexrelid <span style="color:#f92672">=</span> pg_class.oid;
+</span></span></code></pre></div><h3 id="rebuilding-indexes">Rebuilding indexes</h3>
+<p><a href="https://www.postgresql.org/docs/current/sql-reindex.html">REINDEX</a> rebuilds an index using the data stored in the index table, replacing the old copy of the index. If we suspect corruption of an index on a table, we can simply rebuild that index, or all indexes on the table, using <code>REINDEX INDEX</code> or <code>REINDEX TABLE</code></p>
+<p>REINDEX is similar to a drop and recreate of the index in that the index contents are rebuilt from scratch. However, locking considerations are rather different. REINDEX locks out writes but not reads of the index&rsquo;s parent table. It also takes an exclusive lock on the specific index being processed, which will block reads that attempt to use that index.</p>
+<blockquote>
+<p>Another option is to drop index concurrently and create again concurrently.</p>
+</blockquote>
+<h2 id="conclusion">Conclusion</h2>
+<p>This post aimed to provide an overview of how Postgres queries the database. By understanding query plans better and carefully taking measures (mostly through indexes), we can get the best performance out of the Postgres database.</p>
+<h2 id="further-reading">Further Reading</h2>
+<ul>
+<li><a href="https://www.postgresql.org/docs/8.1/index-locking.html">Index locking consideration</a></li>
+<li><a href="https://www.postgresql.org/docs/8.4/locking-indexes.html">Locking indexes</a></li>
+<li><a href="https://www.postgresql.org/docs/current/routine-reindex.html">Routine reindexing</a></li>
+<li><a href="https://www.postgresql.org/docs/9.3/indexes-examine.html">Examining index usage</a></li>
+<li><a href="https://www.postgresql.org/docs/9.3/monitoring-stats.html">Monitoring stats</a></li>
+</ul>
+]]></content:encoded>
+    </item>
+    
+    <item>
+      <title>Postgres Performance Tuning Manual: Query Plans</title>
+      <link>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</link>
+      <pubDate>Sun, 26 Mar 2023 00:11:32 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</guid>
+      <description>Is Postgres slowing down on you? Here&amp;#39;s how to identify areas of improvement using query plans</description>
+      <content:encoded><![CDATA[<p>Postgres is one of the most widely used open source databases in the world. At GOJEK, a lot of our products depend on Postgres as well. A lot of major companies use Postgres as their main database however when you&rsquo;re building and operating at scale, the volume of data passing through the pipelines can slow down the most efficient systems.</p>
+<p>To optimise things in order to enhace performace, we can target the brain of the database whhich is <em>optimizer</em>. Optimizer interprets queries and determines the fastest method of execution. A single query optimization technique can increase database performance drastically.</p>
+<p><img loading="lazy" src="/img/postgres-query-lifecycle.png" alt="postgres query lifecycle"  />
+</p>
+<p>This post outlines how to analyse Postgres performance using tools such as EXPLAIN and ANALYZE (which Postgres provides).</p>
+<h2 id="meet-explain-analyze">Meet EXPLAIN &amp; ANALYZE</h2>
+<p><code>EXPLAIN</code> gives an exact breakdown of a query. The execution plan is based on the statistics about the table, and it identifies the most efficient path to the data. This takes different database paradigms (such as indexes) into consideration. <code>EXPLAIN</code> only guesses a plan that it thinks it will execute.
+This is where <code>ANALYZE</code> comes into the picture. <code>ANALYZE</code> basically runs a query to find the processing time to execute a query.</p>
+<p>To quickly summarise, <code>EXPLAIN</code> and <code>ANALYZE</code> commands help improve database performance in Postgres by:</p>
+<blockquote>
+<p>a. <em>Displaying the execution plan that the PostgreSQL planner generates for the supplied statement.</em></p>
+<p>b. <em>Actually running the command to show the run time.</em></p>
+</blockquote>
+<h2 id="finding-the-framework">Finding the framework</h2>
+<p>Let&rsquo;s consider we have a table named <code>schemes</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes;
+</span></span></code></pre></div><blockquote>
+<p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..64 rows=328 width=479)</em></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> pg_class <span style="color:#66d9ef">where</span> relname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;schemes&#39;</span>;
+</span></span></code></pre></div><p><code>pg_class</code> has the metadata about the tables.</p>
+<p>Cost in the query plan is calculated using the following formula</p>
+<blockquote>
+<p><em>COST = (disk read pages x seq_page_cost) + (rows scanned x cpu_tuple_cost).</em></p>
+</blockquote>
+<ul>
+<li>Disk read pages and rows scanned are the properties of <code>pg_class</code>.</li>
+<li>Seq page cost is the estimated cost of disk read fetch.</li>
+<li>Cpu tuple cost is the estimated cost of processing each row.
+eg., COST (54 x 1.0) + (1000 x .01) = 64</li>
+</ul>
+<p>Let&rsquo;s see how the query plan changes when we apply filters in the select statement.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> schemes <span style="color:#66d9ef">WHERE</span> status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;active&#39;</span>;
+</span></span></code></pre></div><blockquote>
+<p><em>QUERY PLAN | Seq Scan on schemes (cost=0.00..66.50 rows=960 width=384) Filter: ((status)::text = &lsquo;active&rsquo;::text)</em></p>
+</blockquote>
+<p>The estimated cost here is higher than the previous query, this is because Postgres is performing a seq scan over 1000 rows first and then filtering out the rows based on the <code>WHERE</code> clause.</p>
+<h2 id="planner-cost-constants">Planner cost constants</h2>
+<p>The cost variables described in this section are measured on an arbitrary scale. Only their relative values matter, hence scaling them all up or down by the same factor will result in no change in the planner&rsquo;s choices. By default, these cost variables are based on the cost of sequential page fetches; that is, seq_page_cost is conventionally set to 1.0 and the other cost variables are set with reference to that. But you can use a different scale if you prefer, such as actual execution times in milliseconds on a particular machine.</p>
+<p>Unfortunately, there is no well-defined method for determining ideal values for the cost variables. They are best treated as averages over the entire mix of queries that a particular installation will receive. This means that changing them on the basis of just a few experiments is very risky. <a href="https://www.postgresql.org/docs/current/runtime-config-query.html#RUNTIME-CONFIG-QUERY-CONSTANTS">Refer planner cost constants</a>].</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">EXPLAIN</span> <span style="color:#66d9ef">SELECT</span> schemes.rules <span style="color:#66d9ef">FROM</span> scheme_rules <span style="color:#66d9ef">JOIN</span> schemes <span style="color:#66d9ef">ON</span> (scheme_rules.scheme_id <span style="color:#f92672">=</span> schemes.id ) <span style="color:#66d9ef">where</span> scheme_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;weekend_scheme&#39;</span>;
+</span></span></code></pre></div><p>The query planner sometimes decides to use a two-step plan. The reason for using two-plan node is the first plan sorts the row locations identified by the index into physical order before reading them, and the other plan actually fetches those rows from the table.</p>
+<h2 id="down-to-the-nuts-andbolts">Down to the nuts and bolts</h2>
+<p>The first plan which does the sorting is called Bitmap scan.</p>
+<p>Most common occurring matches are scanned using the <code>seq scan</code> and the least common matches are scanned using <code>index scan</code>, anything in between is scanned using <code>bitmap heap scan</code> followed by an <code>index scan</code>. One of the reasons for this is that the random I/O is very slow as compared to sequential I/O. This is all driven by analysing statistics.</p>
+<h3 id="bitmap-heap-scan">Bitmap heap scan</h3>
+<p>A <a href="https://www.postgresql.org/docs/8.1/performance-tips.html">bitmap heap scan</a> is like a seq scan - the difference being, rather than visiting every disk page, it scans ANDs and ORs of the applicable index together and only visits the disk pages it needs to visit. This is different from index scan where the index is visited row by row in order, which results in disk pages being visited multiple times. A bitmap scan will sequentially open a short list of disk pages and grab every applicable row in each one.</p>
+<h3 id="sequential-scan-vs-index-scan">Sequential scan vs index scan</h3>
+<p>There are cases where a sequential scan is faster than an index scan. When reading data from a disk, a sequential method is usually faster than reading in random order. This is because an index scan requires several I/O for each row which includes looking up a row in the index, and based on that, looking up and retrieving the row from memory(heap). On the other hand, a sequential scan requires a single I/O operation to retrieve more than one block containing multiple rows.</p>
+<h2 id="query-plan-onjoins">Query plan on JOINS</h2>
+<p>The optimizer needs to pick the correct join algorithm when there are multiple tables to be joined in the select statement. Postgres uses three different kinds of join algorithms based on the type of join we are using.</p>
+<blockquote>
+<p><em>Let&rsquo;s dive in</em></p>
+</blockquote>
+<p><strong>Nested Loop</strong>: Here the planner can use either a sequential scan or index scan for each of the elements in the first table. The planner uses a sequential scan when the second table is small. The basic logic of choosing between a sequential scan and index scan applies here too.
+<strong>Hash Join</strong>: In this algorithm, the planner creates a hash table of the smaller table on the join key. The larger table is then scanned, searching the hash table for the rows which meet the join condition. This requires a lot of memory to store the hash table in the first place.
+<strong>Merge Join</strong>: This is similar to merge sort algorithm. Here the planner sorts both the tables to be joined on the join attribute. The tables are then scanned in parallel to find the matching values.</p>
+<blockquote>
+<p>Further reading on how we can use Explain/Analyze with join statements <a href="https://www.postgresql.org/docs/11/using-explain.html#USING-EXPLAIN-ANALYZE">here</a></p>
+</blockquote>
+<p>Postgres performance tuning is a complicated task. The complexity comes in identifying the appropriate &rsquo;tunable&rsquo; from the many tools that Postgres provides. As you might have now guessed, there is no silver bullet to solving performance issues in Postgres - it&rsquo;s the use case that dictates the tuning requirements. 😅</p>
+<p>Hope this helped. Keep following the blog for more updates! 🙂</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>
