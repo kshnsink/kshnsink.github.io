@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>Kubernetes | Kishan&#39;s World</title>
+<title>Posts | Kishan&#39;s World</title>
 <meta name="keywords" content="">
-<meta name="description" content="">
+<meta name="description" content="Posts - Kishan&#39;s World">
 <meta name="author" content="Kishan Sharma">
-<link rel="canonical" href="http://kshnsink.com/categories/kubernetes/">
+<link rel="canonical" href="http://kshnsink.com/posts/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.6a98292fb8fa8cf0f3ba4042d4b75515c04267550f3ad49ff6271b5af9562443.css" integrity="sha256-apgpL7j6jPDzukBC1LdVFcBCZ1UPOtSf9icbWvlWJEM=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://kshnsink.com/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://kshnsink.com/favicon-16x16.png">
@@ -18,7 +18,7 @@
 <link rel="mask-icon" href="http://kshnsink.com/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://kshnsink.com/categories/kubernetes/index.xml">
+<link rel="alternate" type="application/rss+xml" href="http://kshnsink.com/posts/index.xml">
 <noscript>
     <style>
         #theme-toggle,
@@ -55,15 +55,30 @@
         }
 
     </style>
-</noscript><meta property="og:title" content="Kubernetes" />
+</noscript><meta property="og:title" content="Posts" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="http://kshnsink.com/categories/kubernetes/" />
+<meta property="og:url" content="http://kshnsink.com/posts/" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Kubernetes"/>
+<meta name="twitter:title" content="Posts"/>
 <meta name="twitter:description" content=""/>
 
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://kshnsink.com/posts/"
+    }
+  ]
+}
+</script>
 </head>
 
 <body class="list" id="top">
@@ -135,40 +150,34 @@
     </nav>
 </header>
 <main class="main"> 
-<header class="page-header"><div class="breadcrumbs"><a href="http://kshnsink.com/">Home</a>&nbsp;»&nbsp;<a href="http://kshnsink.com/categories/">Categories</a></div>
+<header class="page-header"><div class="breadcrumbs"><a href="http://kshnsink.com/">Home</a></div>
   <h1>
-    Kubernetes
+    Posts
   </h1>
 </header>
 
-<article class="post-entry tag-entry"> 
-<figure class="entry-cover"><img loading="lazy" src="http://kshnsink.com/img/resource_management_cover.png" alt="">
+<article class="post-entry"> 
+<figure class="entry-cover"><img loading="lazy" src="http://kshnsink.com/img/multi-pod-cidr.svg" alt="Post image">
 </figure>
   <header class="entry-header">
-    <h2>Resource Mangement in Kubernetes Cluster: Understanding Resources
+    <h2>Extend CIDR
     </h2>
   </header>
   <div class="entry-content">
-    <p>Kubernetes is a container orchestration platform that allows you to manage and automate the deployment, scaling and management of containerised application. In this post we will look into the resource management in Kubernetes which involves allocating resources such as CPU, memory to the containers running in a cluster
-Understanding Resource At the heart of a Kubernetes cluster is a resource abstraction called pods which groups containers together and manage their resources as a unit....</p>
+    <p>A VPC native cluster uses three unique subnet ranges to allocate IPs to Nodes, Pods and Services.
+Primary subnet IP address is used for Nodes. Node IP provides connectivity from control components like kube-proxy and kubelet to the Kubernetes API server. Node IP is the node’s connection to the rest of the cluster.
+Secondary subnet IP address is used for Pods. Pod IP addresses are natively routable within the cluster’s VPC network and other VPC networks connected to it by VPC Network Peering....</p>
   </div>
-  <footer class="entry-footer"><span title='2023-05-11 03:52:06 +0530 IST'>May 11, 2023</span>&nbsp;·&nbsp;5 min&nbsp;·&nbsp;Kishan Sharma</footer>
-  <a class="entry-link" aria-label="post link to Resource Mangement in Kubernetes Cluster: Understanding Resources" href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/"></a>
+  <footer class="entry-footer"><span title='2023-03-23 01:17:57 +0530 IST'>March 23, 2023</span>&nbsp;·&nbsp;2 min&nbsp;·&nbsp;Kishan Sharma</footer>
+  <a class="entry-link" aria-label="post link to Extend CIDR" href="http://kshnsink.com/posts/extend-cidr/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-<figure class="entry-cover"><img loading="lazy" src="http://kshnsink.com/img/prometheus-kubernetes-monitoring.png" alt="">
-</figure>
-  <header class="entry-header">
-    <h2>Kubernetes Prometheus Monitoring
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Monitoring Kubernetes cluster with Prometheus Prometheus is a widely used open-source monitoring system that is commonly used for monitoring Kubernetes environments. In Kubernetes, Prometheus can be used to monitor various Kubernetes components such as pods, nodes, and services. Kubernetes provides an API that allows Prometheus to discover the endpoints of the different components and collect metrics from them. These metrics can include CPU usage, memory usage, network traffic, and other relevant information....</p>
-  </div>
-  <footer class="entry-footer"><span title='2023-04-25 01:26:36 +0530 IST'>April 25, 2023</span>&nbsp;·&nbsp;6 min&nbsp;·&nbsp;Kishan Sharma</footer>
-  <a class="entry-link" aria-label="post link to Kubernetes Prometheus Monitoring" href="http://kshnsink.com/posts/kubernetes-prometheus-monitoring/"></a>
-</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="http://kshnsink.com/posts/">
+      «&nbsp;Prev&nbsp;
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">

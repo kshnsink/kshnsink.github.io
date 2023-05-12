@@ -6,7 +6,93 @@
     <description>Recent content in kubernetes on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 25 Apr 2023 01:26:36 +0530</lastBuildDate><atom:link href="http://kshnsink.com/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 11 May 2023 03:52:06 +0530</lastBuildDate><atom:link href="http://kshnsink.com/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Resource Mangement in Kubernetes Cluster: Understanding Resources</title>
+      <link>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</link>
+      <pubDate>Thu, 11 May 2023 03:52:06 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</guid>
+      <description>Understanding Kubernetes resources and Quality of Service classes</description>
+      <content:encoded><![CDATA[<p>Kubernetes is a container orchestration platform that allows you to manage and automate the deployment, scaling and management of containerised application. In this post we will look into the resource management in Kubernetes which involves allocating resources such as CPU, memory to the containers running in a cluster</p>
+<h1 id="understanding-resource">Understanding Resource</h1>
+<p>At the heart of a Kubernetes cluster  is a resource abstraction called <strong>pods</strong> which groups containers together and manage their resources as a unit.  ****Each pod is assigned a certain amount of CPU and memory resources, which are used by the containers running within the pod. Pods run on a node in the cluster and the node size in terms of memory and CPU in a cluster is definite. Only certain number of pods can be run in a cluster and it is a duty of a Kubernetes cluster admin to assign the resources to the pod optimally to get the best utilization and at the same time ensuring that there’s enough room to deal with increasing load and failures.</p>
+<p>Kubernetes scheduler decides where to place a pod in the cluster, basically which node has spare resource. In order to schedule pods effectively, the scheduler must know the resource requirements for each pod. This is where Kubernetes resource requests and limits kicks in</p>
+<h2 id="container-resource">Container Resource</h2>
+<h3 id="requests-and-limitshttpskubernetesiodocsconceptsconfigurationmanage-resources-containersrequests-and-limits"><a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits">Requests and Limits</a></h3>
+<p>Kubernetes resource configuration consists of two components: <code>requests</code> and <code>limits</code>.</p>
+<ul>
+<li>request specifies the minimum amount of a request that a pod needs to run.</li>
+<li>limit specifies the maximum amount of resource that a pod is allowed to use.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">resources</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;200Mi&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;400m&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;400Mi&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;800m&#34;</span>
+</span></span></code></pre></div><p>Setting resource requests and limits allows to accommodate spiky Pods in a cluster. Resource limits are a hard boundary for a pod. A pod that tries to use more than its allocated CPU limit which is a <em>compressible resource</em> will be throttled thus impacting performance and if it tries to use more than the allowed memory limit which is an incompressible resource, the pod gets terminated with OOM error. Scheduler tries to schedule the pod in any other nodes in the cluster if there’s enough memory in the node. Kubernetes allows resources to be overcommitted which means the sum of all the resource limits of containers on a cluster(node) can exceed the total resources.</p>
+<p>Despite all the efforts put upfront in defining the resource requirements, what happens if the containers are using more resources than allocated. Kubernetes uses <code>Quality of Service (QoS)</code> classes to make a decision about evicting pods in resource crunch situations.</p>
+<h2 id="quality-of-serviceqos">Quality of Service(QoS)</h2>
+<p>Kubernetes has 3 QoS classes <em>Guaranteed</em>, <em>Burstable</em>, or <em>BestEffort</em> defined. This cannot be assigned directly by you, rather Kubernetes does it for you on the basis of resources defined in the Pod manifest.</p>
+<h3 id="guaranteed">Guaranteed</h3>
+<p>When containers Limits(CPU and Memory) matches requests(CPU and memory). This essentially means that control plane kills this Pod if it exceeds the specified limits.</p>
+<p><img loading="lazy" src="/img/guaranteed_qos_class.jpg" alt=" "  />
+</p>
+<blockquote>
+<p>Note: If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes automatically assigns a memory request that matches the limit. Similarly, if a Container specifies its own CPU limit, but does not specify a CPU request, Kubernetes automatically assigns a CPU request that matches the limit.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">kubectl get po qos-pod-guaranteed -o yaml</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">resources</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">200m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">200m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">status</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">qosClass</span>: <span style="color:#ae81ff">Guaranteed </span>
+</span></span></code></pre></div><h3 id="burstable">Burstable</h3>
+<p>When containers Limits is higher than Requests. Kubernetes allows burstable pods upto their limit if capacity is available in the node. If the pod uses more resources than the request and there’s not enough resource available in the node, the pod gets terminated.</p>
+<p><img loading="lazy" src="/img/burstable_qos_class.jpg" alt=" "  />
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">kubectl get po qos-pod-burstable -o yaml</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">resources</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">200m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">400m</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">800Mi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">status</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">qosClass</span>: <span style="color:#ae81ff">Burstable </span>
+</span></span></code></pre></div><h3 id="besteffort">BestEffort</h3>
+<p>When containers doesn’t specify any resource request or limits. In this situation pods are allowed to use whatever resource is available on the node but it will be the first one to be killed when the cluster needs to make room for higher(Burstable/Guaranteed) QoS pods.</p>
+<p><img loading="lazy" src="/img/besteffort_qos_class.jpg" alt=" "  />
+</p>
+<h2 id="what-should-you-do">What should you do?</h2>
+<p>In the first instance it seems that Guaranteed is the best QoS class to set for the pods. But remember resource(memory/CPU) has some cost 💰. Let us try and understand how this can be approached. Considering we have a definite resource at hand and if we want to set request and limits equal(Guaranteed QoS class) we have to either increase requests or lower the limits. In case of increasing the resource, we might be blocking too much of resource unnecessarily and some other Pod which could have been scheduled in the node is not getting the resource. If we lower the Limit, the pod might throttle during the peak/spike hours. This seems like a similar territory when VMs are used.</p>
+<blockquote>
+<p><em>Scheduling of a Pod is based on requests and not limits</em></p>
+</blockquote>
+<p>The place where Kubernetes is different from the conventional resource allocation is when we use Burstable pods. Here, the amount of resource blocked by the pod is lower than the amount of resource pod needs during surge hours.</p>
+<p>Pods with QoS class as <em>BestEffort</em> gets the <strong>lowest priority.</strong> If resource is not specified, Kubernetes scheduler will place such pods on any of the node which has available resource.</p>
+<p>During the eviction, Kubelet selects the Pods to evict in order of QoS class. Pods classified as BestEffort will be first evicted followed by Burstable and finally Guaranteed.</p>
+<blockquote>
+<p><em>Always specify resource requests and limits. This helps Kubernetes schedule and manage the pods properly. For critical pods or stateful sets, prefer Guaranteed class and Burstable for the less critical ones</em></p>
+</blockquote>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Kubernetes Prometheus Monitoring</title>
       <link>http://kshnsink.com/posts/kubernetes-prometheus-monitoring/</link>
