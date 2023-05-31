@@ -6,7 +6,143 @@
     <description>Recent content on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 May 2023 03:52:06 +0530</lastBuildDate><atom:link href="http://kshnsink.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 May 2023 09:55:51 +0530</lastBuildDate><atom:link href="http://kshnsink.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Resource Mangement in Kubernetes Cluster: Isolation Using Namespaces</title>
+      <link>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterisolation-using-namespaces/</link>
+      <pubDate>Mon, 29 May 2023 09:55:51 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterisolation-using-namespaces/</guid>
+      <description>Understanding Isolation using Namespaces in Kubernetes</description>
+      <content:encoded><![CDATA[<h1 id="isolation-using-namespaces">Isolation using Namespaces</h1>
+<p>In Kubernetes, namespaces are a way to create virtual clusters within a physical cluster, providing resource isolation and segregation. Think of it like kernel namespace which is a feature to isolate resources from each other. Analogous to a physical world example, think of it like a store in a shopping mall which has its own physical piece of land, electricity bill, water bill, interior design in a shared shopping complex. The shopping complex is our cluster and the store is a namespace within the cluster. A namespace is a logical boundary that allows you to divide cluster resources and create separate environments for different applications, teams, or projects.</p>
+<h2 id="how-namespaces-create-isolation">How Namespaces create Isolation?</h2>
+<p>Resource isolation using namespaces helps prevent interference between different workloads running on the same Kubernetes cluster. Let’s see how it can be achieved:</p>
+<h3 id="namespaced-scope">Namespaced Scope</h3>
+<p>Kubernetes resources such as pods, services, deployments, replica sets belong to a specific namespace. By default, resources are created in the <code>default</code> namespace if no namespace is specified. Each namespace provides an isolated environments where resources can be created and managed. This means that you could have a service called <code>HelloWorld</code> in a <code>production</code> namespace and a different service called <code>HelloWorld</code> in the <code>test</code> namespace and there won’t be any conflict.</p>
+<blockquote>
+<p>Namespaces are logically isolated from one another but they can still communicate with services in another namespace.</p>
+</blockquote>
+<p>Service DNS names folllow the <code>SERVICE.NAMESPACE.svc.cluster.local</code> pattern. Kubernetes DNS service directory can easily locate any service by its name by using the expanded form of DNS addressing. To access HelloWorld service in the production namespace, simply use <code>helloworld.production</code></p>
+<h3 id="resource-allocation">Resource Allocation</h3>
+<p>Namespaces allow you to allocate and limit resources separately for different workloads. For example, you can allocate specific amount of CPU and memory resources to a namespace and the resources within the namespace will be constrained by the specified limits. This is done with the help of ResourceQuotas and LimitRanges which are the objects used to control resource usage by the cluster administrator.</p>
+<h4 id="resourcequota">ResourceQuota</h4>
+<p>The ResourceQuota is the total allocated resources for a particular namespace</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ResourceQuota</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">quota</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">hard</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">limits.cpu</span>: <span style="color:#e6db74">&#34;50&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">limits.memory</span>: <span style="color:#ae81ff">100Gi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">requests.cpu</span>: <span style="color:#e6db74">&#34;25&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">requests.memory</span>: <span style="color:#ae81ff">50Gi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">pods</span>: <span style="color:#e6db74">&#34;50&#34;</span>
+</span></span></code></pre></div><h4 id="limitrange">LimitRange</h4>
+<p>LimitRange is used for managing constraints of resource allocation at a pod and container level within the namespace</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#e6db74">&#34;v1&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#e6db74">&#34;LimitRange&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;resource-limits&#34;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>    -
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">type</span>: <span style="color:#e6db74">&#34;Pod&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">max</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;2&#34;</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;1Gi&#34;</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">min</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;200m&#34;</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;6Mi&#34;</span> 
+</span></span><span style="display:flex;"><span>    -
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">type</span>: <span style="color:#e6db74">&#34;Container&#34;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">max</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;2&#34;</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;1Gi&#34;</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">min</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;100m&#34;</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;4Mi&#34;</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">default</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;300m&#34;</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;200Mi&#34;</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">defaultRequest</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;200m&#34;</span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#e6db74">&#34;100Mi&#34;</span> 
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">maxLimitRequestRatio</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#e6db74">&#34;10&#34;</span>
+</span></span></code></pre></div><p><img loading="lazy" src="/img/kubernetes_resource_quota_limit_range.png" alt=" "  />
+</p>
+<h3 id="access-control">Access Control</h3>
+<p>Namespaces provide a mechanism for access control and permissions. You can define role-based access control(<strong>RBAC</strong>) policies to grant different levels of access to users or groups for resources within a namespace. This enables fine-grained control over who can access and modify(update) resources within a specific cluster and also within a namespace, enhancing security and isolation. In RBAC there are three components</p>
+<h4 id="users-and-groups">Users and Groups</h4>
+<p>Users are individuals who need access to the cluster, while groups are collections of users with similar roles</p>
+<h4 id="roles">Roles</h4>
+<p>A role is a set of rules that define a set of permissions within a specific namespace. Roles can be created at the namespace level using <code>Role</code>object and are used to grant access to resources within the namespace. It is also possible to define the role which has access across the cluster using <code>ClusterRole</code> object</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>] <span style="color:#75715e"># &#34;&#34; indicates the core API group</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;pods&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>]
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># &#34;namespace&#34; omitted since ClusterRoles are not namespaced</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-reader</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">rules</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">apiGroups</span>: [<span style="color:#e6db74">&#34;&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># at the HTTP level, the name of the resource for accessing Secret</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># objects is &#34;secrets&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">resources</span>: [<span style="color:#e6db74">&#34;secrets&#34;</span>]
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">verbs</span>: [<span style="color:#e6db74">&#34;get&#34;</span>, <span style="color:#e6db74">&#34;watch&#34;</span>, <span style="color:#e6db74">&#34;list&#34;</span>]
+</span></span></code></pre></div><h4 id="rolebindings-and-clusterrolebindings">RoleBindings and ClusterRoleBindings</h4>
+<p><strong>RoleBindings</strong> associate a role with a user or a group, granting the defined permissions to the user/group within a specific namespace.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This role binding allows &#34;jane&#34; to read pods in the &#34;default&#34; namespace.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You need to already have a Role named &#34;pod-reader&#34; in that namespace.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">read-pods</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">default</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You can specify more than one &#34;subject&#34;</span>
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">jane</span> <span style="color:#75715e"># &#34;name&#34; is case sensitive</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># &#34;roleRef&#34; specifies the binding to a Role / ClusterRole</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Role</span> <span style="color:#75715e">#this must be Role or ClusterRole</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">pod-reader</span> <span style="color:#75715e"># this must match the name of the Role or ClusterRole you wish to bind to</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span></code></pre></div><p><strong>ClusterRoleBindings</strong> on the other hand, associate a role with a user/group across the entire cluster, granting permissions across all namespaces</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This role binding allows &#34;dave&#34; to read secrets in the &#34;development&#34; namespace.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># You need to already have a ClusterRole named &#34;secret-reader&#34;.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">RoleBinding</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">read-secrets</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># The namespace of the RoleBinding determines where the permissions are granted.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># This only grants permissions within the &#34;development&#34; namespace.</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">development</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">subjects</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">User</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">dave</span> <span style="color:#75715e"># Name is case sensitive</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">roleRef</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">ClusterRole</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">secret-reader</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">apiGroup</span>: <span style="color:#ae81ff">rbac.authorization.k8s.io</span>
+</span></span></code></pre></div><p>Implementing RBAC enforces strong access controls ensuring that only authorized users/groups have appropriate level of access to cluster resources.</p>
+<p>By leveraging namespaces, Kubernetes provides a powerful mechanism for isolating and managing resources within a cluster. It allows you to run multiple applications or projects on the same cluster without interference or noisy neighbour problem and provides control over resource allocation, access control, and resource quotas at the namespace level.</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Resource Mangement in Kubernetes Cluster: Understanding Resources</title>
       <link>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</link>
