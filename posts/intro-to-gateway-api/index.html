@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
 <title>Intro to Gateway API | Kishan&#39;s World</title>
-<meta name="keywords" content="gateway-api, gke, ingress">
+<meta name="keywords" content="kubernetes, gateway-api">
 <meta name="description" content="Gateway API in Kubernetes">
 <meta name="author" content="Kishan Sharma">
 <link rel="canonical" href="http://kshnsink.com/posts/intro-to-gateway-api/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.be5ea6bc564de3d4040047ce65230fcb02e7487f79c6adc13473043d63275714.css" integrity="sha256-vl6mvFZN49QEAEfOZSMPywLnSH95xq3BNHMEPWMnVxQ=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.5e075fac125b9f37cb03d7e9b44b819cc97ad60447f78258d02b5023d6ecec40.css" integrity="sha256-XgdfrBJbnzfLA9fptEuBnMl61gRH94JY0CtQI9bs7EA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
     onload="hljs.initHighlightingOnLoad();"></script>
 <link rel="icon" href="http://kshnsink.com/favicon.ico">
@@ -98,7 +98,7 @@
   "name": "Intro to Gateway API",
   "description": "Gateway API in Kubernetes",
   "keywords": [
-    "gateway-api", "gke", "ingress"
+    "kubernetes", "gateway-api"
   ],
   "articleBody": "Ingress vs Gateway API Ingress supports the following HTTP host matching HTTP path matching TLS termination Routing to service:port For many different load balancer implementations Gateway adds HTTP header-based matching HTTP header manipulation Weighted traffic splitting Traffic mirroring Role-oriented resource model and has extensibility for Arbitrary backend CRD references (buckets, functions, etc) Routing for other protocols(gRPC) Custom parameters or configuration (LB algos, custom match types, etc) Gateway controller manage the network infrastructure on behalf of Gateway resources. There are one or more Gateway classes supported by a Gateway controller. Gateways are created from the Gateway classes and they model the actual network infrastructure which processes the traffic. Gateways can model many different kinds of data planes that perform routing.\nThen comes the route resources. Gateway and the HTTP route resources do what the ingress resource does as a single resource. This separation allows different roles to deploy and own that resource. It allows a cluster administrator to mange the Gateway and the policies attached to that Gateway, while individual development teams manage the routing to their application on their own.\nRoles involved Infrastructure Provider ensures that each cluster is provisioned with a GatewayClass ****for external load balancers\nkind: GatewayClass metadata: name: external-lb spec: controller: mygroup.io/gateway parametersRef: group: k8s.mygroup.io kind: GatewayClassParams name: external-lb Cluster Operator Creates a Gateway for the mygroup team when setting up the cluster\nkind: Gateway metadata: name: mygroup-external spec: gatewayClassName: external-lb listeners: - protocol: HTTP port: 80 routes: kind: HTTPRoute selector: matchLebels: gateway: mygroup-external Application Developer creates an HTTPRoute to route external traffic to the application\nkind: HTTPRoute metadata: name: mygroup labels: gateway: mygroup-external spec: hostnames: - mygroup.io rules: - matches: path: value: /groups forwardTo: serviceName: mygroup-groups port: 8080 Features Canary Rollout Application developer wants to do a canary rollout\nkind: HTTPRoute ... rules: - matches: path: value: /groups forwardTo: - serviceName: mygroup-groups port: 8080 weight: 90 - serviceName: mygroup-groups-canary port: 8080 weight: 10 Upgrade Load Balancer Cluster operator wants to upgrade to the newest kind of LB\nkind: Gateway metadata: name: mygroup-external spec: gatewayClassName: new-external-lb listeners: - protocol: HTTP port: 80 routes: kind: HTTPRoute selector: matchLebels: gateway: mygroup-external Update Infrastructure Provider Infrastructure provider wants to provision on a new provider\nkind: GatewayClass metadata: name: external-lb spec: controller: new-vendor.io/gateway parametersRef: group: k8s.mygroup.io kind: GatewayClassParams name: external-lb ",
   "wordCount" : "379",
@@ -181,13 +181,13 @@
                 </a>
             </li>
             <li>
-                <a href="http://kshnsink.com/search/" title="Search (Alt &#43; /)" accesskey=/>
-                    <span>Search</span>
+                <a href="http://kshnsink.com/series/" title="Series">
+                    <span>Series</span>
                 </a>
             </li>
             <li>
-                <a href="http://kshnsink.com/series/" title="Series">
-                    <span>Series</span>
+                <a href="http://kshnsink.com/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
                 </a>
             </li>
         </ul>

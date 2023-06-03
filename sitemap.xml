@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterisolation-using-namespaces/</loc>
+    <loc>http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</loc>
     <lastmod>2023-05-29T09:55:51+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</loc>
