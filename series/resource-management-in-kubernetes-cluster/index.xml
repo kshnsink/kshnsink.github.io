@@ -6,7 +6,99 @@
     <description>Recent content in Resource Management in Kubernetes Cluster on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 May 2023 09:55:51 +0530</lastBuildDate><atom:link href="http://kshnsink.com/series/resource-management-in-kubernetes-cluster/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kshnsink.com/series/resource-management-in-kubernetes-cluster/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Resource Mangement in Kubernetes Cluster: Sizing a Kubernetes Cluster</title>
+      <link>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</link>
+      <pubDate>Sun, 18 Jun 2023 02:19:35 +0530</pubDate>
+      
+      <guid>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</guid>
+      <description>Sizing a Kubernetes cluster with an example</description>
+      <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
+<p>When sizing a Google Kubernetes Engine (GKE) cluster, several factors come into play such as the expected workload, resource requirements, performance needs etc. Similar to performance, scalability is a very critical factor to the success of a growing organisation which should be considered during the design of a cluster.</p>
+<p>Scalability of a Kubernetes cluster is not one dimensional but a combination of a lot of components. When considering the scalability of a Kubernetes cluster, a better way to think about scalability is that within all possible configurations of the cluster there is a cube which wraps an envelope of those configurations which will offer you good stability and  performance and as long as you are within that envelope essentially meaning within the limits of scalability on multiple dimensions you are safe and you can say that you are within the scalability limits.</p>
+<p><img loading="lazy" src="/img/kubernetes_scalability_envelope.jpg#center" alt="Scalability envelope"  />
+</p>
+<p>However, it&rsquo;s important to note that the dimensions that describe the configurations of the cube are not independent. This means that moving further in any one dimension may contract the viable space in the other dimensions. In practical terms, this means that increasing scalability in one area may come at the cost of reduced scalability in another area.</p>
+<p>One potential solution to this issue is to decompose the cube into independent sub-cubes. This approach can help reduce the dimensionality of the problem and make it easier to focus on specific areas of scalability. By breaking down the cube into smaller, more manageable parts, it is possible to more effectively analyze and optimize each individual component.</p>
+<h2 id="defining-a-kubernetes-cluster">Defining a Kubernetes cluster</h2>
+<p>The Kubernetes cluster can scale within a range and limits to accommodate workloads and resource demands effectively. Kubernetes scalability envelope defines the boundaries and constraints of scalability based on various factors such as cluster size, node capacity, resource allocation and performance requirements. The scalability envelope helps cluster administrators and operators understand the cluster’s capabilities and plan for scaling appropriately.</p>
+<p>The key considerations during designing a cluster include:</p>
+<ol>
+<li>Cluster Size: Sizing a cluster correctly to accommodate all the workloads is very important. Resource is not cheap, if we oversize a cluster, we waste resources 🤦 and if we undersize the cluster, we get production issues 😛. Sizing basically takes into account the desired number of worker nodes in the cluster. It defines the minimum and maximum limits for the number of nodes that can be added or removed from the cluster to handle workload fluctuations efficiently.</li>
+<li>Node Capacity: Each worker node in the cluster has its own capacity in terms of CPU, memory, and other resources. Kubernetes can work with a wide range of node sizes. Choose appropriate worker node instance types based on CPU, memory, and other resource specifications. Using the most cost effective node size that the cloud provider offers is considered an optimal solution but often times larger nodes works out to be cheaper. This increases pod density and the pods are not scattered out in the cluster which minimizes the idea of pod replication and high availability in case of a node failure. In these cases try adding some smaller nodes too to help with redundancy.</li>
+<li>Resource Allocation: The scalability envelope includes resource allocation considerations such as CPU, memory, storage, and network bandwidth. It defines the minimum and maximum limits for resource allocation per pod, ensuring that the cluster can scale within those limits without overcommitting or under-utilizing resources.</li>
+<li>High Availability: Ensure sufficient redundancy and fault tolerance by sizing your cluster with multiple worker nodes. This helps distribute the workload and prevent a single point of failure.</li>
+<li>Future Growth: Consider future growth and scalability needs of your application or addition of new applications. Plan for potential increases in workload, additional features, or user base expansion. Ensure that the cluster sizing accounts for these future requirements.</li>
+</ol>
+<h2 id="kubernetes-scalability-thresholds">Kubernetes Scalability Thresholds</h2>
+<p>Quoting Kubernetes official community <a href="https://github.com/kubernetes/community/blob/master/sig-scalability/slos/slos.md#how-we-define-scalability">documentation</a>, scalability thresholds is defined on the basis of “You Promise, We Promise” principle</p>
+<p><strong>If you promise to:</strong></p>
+<ul>
+<li>correctly configure your cluster</li>
+<li>use extensibility features &ldquo;reasonably&rdquo;</li>
+<li>keep the load in the cluster within recommended limits</li>
+</ul>
+<p><strong>then we promise that your cluster scales, i.e.:</strong></p>
+<ul>
+<li>all the SLOs are satisfied</li>
+</ul>
+<p>More on Kubernetes scalability thresholds <a href="https://github.com/kubernetes/community/blob/master/sig-scalability/configs-and-limits/thresholds.md">here</a> and <a href="https://docs.google.com/presentation/d/1aWjxpY4YJ4KJQUTqaVHdR4sbhwqDiW30EF4_hGCc-gI/edit#slide=id.g499cd019d8_0_3">here</a></p>
+<blockquote>
+<p>Sizing a real world production kubernetes cluster 👇 below. This calculation can be taken as a reference and modified as per the requirements.</p>
+</blockquote>
+<h2 id="sizing-a-kubernetes-cluster-an-example">Sizing a Kubernetes Cluster, an example</h2>
+<p><em>For reference, we are using GKE as our cloud provider.</em></p>
+<h3 id="goal">Goal</h3>
+<p>The goal is to define the configurations for a Kubernetes Cluster.</p>
+<h3 id="calculating-total-capacity">Calculating Total Capacity</h3>
+<p>Considering the total requirement of CPU and Memory in the Cluster is <code>90</code> vCPU and <code>250</code> GBs. Total number of replicas(pods) in the cluster is <code>40</code>. Mean requirement of a pod is <code>2</code> vCPU and <code>4</code> GB.</p>
+<h3 id="node-size-number-of-nodes">Node size (number of nodes)</h3>
+<ul>
+<li><strong>Decision</strong>:  n2-standard-8</li>
+<li><strong>Rationale</strong>: We do not want to go with a bigger node size to avoid the larger blast radius in case of a single node failure.</li>
+</ul>
+<h3 id="max-nodes-in-the-cluster">Max nodes in the Cluster</h3>
+<ul>
+<li><strong>Decision</strong>: 32 total, 28 usable</li>
+<li><strong>Rationale</strong>: For a max CPU limit in the existing cluster of <code>90</code> vCPU and memory of <code>250</code> GB, 12 nodes <code>n2-standard-8</code> will have 96(=12*8) CPU. Keeping twice the capacity of the required resources as a buffer, we would need a total of 24 nodes. As per GKE <a href="https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips#cluster_sizing_primary_range">recommendations</a>, we need to use /27 which results in 28 (4 nodes are reserved by GKE ) nodes cluster. The first two and last two IP addresses of a primary IP address range are reserved by Google Cloud.</li>
+</ul>
+<h3 id="podsnode">Pods/node</h3>
+<ul>
+<li><strong>Decision</strong>: 32</li>
+<li><strong>Rationale:</strong> As per GKE autopilot recommendations, the autopilot clusters can have a maximum of <code>32</code> Pods per node. As with the GKE standard, this results in a <code>/26</code> range being provisioned per node which is <code>64</code> IPs.</li>
+</ul>
+<h3 id="cluster-cidrs">Cluster CIDRs</h3>
+<ol>
+<li>
+<p><strong>Primary subnet IP range</strong></p>
+<ul>
+<li><strong>Decision</strong>:  - <code>/26</code></li>
+<li><strong>Rationale</strong>: The Primary range is used to assign IPs to nodes in the cluster. With a max of 32 nodes in the cluster, we would need a <code>/27</code> range. Doubling this range to <code>/26</code> to support IP exhaustion cases during cluster upgrades or node pool drain.</li>
+</ul>
+</li>
+<li>
+<p><strong>Secondary subnet IP range for pods</strong></p>
+<ul>
+<li><strong>Decision</strong>:  - <code>/22</code></li>
+<li><strong>Rationale</strong>: The secondary subnet IP is used to assign pods in the cluster. With a maximum of <code>32</code> pods in a node, we will need a <code>/26</code> IP range for each node which gives us a total requirement for a <code>32</code> nodes cluster of <code>/22</code> (32*32 = 1024, /22 = 1024)</li>
+</ul>
+</li>
+<li>
+<p><strong>Secondary subnet IP range for services</strong></p>
+<ul>
+<li><strong>Decision</strong>:  - <code>/25</code></li>
+<li><strong>Rationale</strong>: Considering the number of applications getting deployed in this cluster is <code>26</code>. Keeping a buffer with the introduction of a few new services we can use <code>/25</code> which is <code>128</code> IPs.</li>
+</ul>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>Sizing a Kubernetes cluster is nothing less than an art. Properly sizing a Kubernetes cluster is a crucial step in ensuring optimal performance, resource utilization, and scalability for your applications.  I’ve tried to cover the basics here but by carefully considering factors such as HPA, VPA, Quotas and LimitRanges, workload scalability, node capacity, high availability, performance objectives, storage needs, networking considerations, scaling policies, and future growth, you can design a well-sized cluster that meets your application&rsquo;s demands.</p>
+<p>Proper cluster sizing involves estimating CPU and memory requirements, selecting suitable worker node instance types, and ensuring redundancy and fault tolerance through multiple nodes. It also requires setting thresholds and policies for scaling based on resource utilization and workload demand, as well as implementing monitoring and observability to continuously monitor the cluster&rsquo;s performance.</p>
+<p>Remember that these sizing guidelines provide a starting point, and the specific requirements may vary based on your workload and application characteristics. Regular monitoring and adjustments are necessary to optimize resource allocation, accommodate growth, and maintain optimal performance.</p>
+]]></content:encoded>
+    </item>
+    
     <item>
       <title>Resource Management in Kubernetes Cluster: Isolation Using Namespaces</title>
       <link>http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</link>

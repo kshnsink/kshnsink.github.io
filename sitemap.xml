@@ -2,6 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</loc>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
+  </url><url>
     <loc>http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</loc>
     <lastmod>2023-05-29T09:55:51+05:30</lastmod>
   </url><url>
@@ -24,28 +27,28 @@
     <lastmod>2023-03-23T01:17:57+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/categories/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/tags/kubernetes/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/categories/kubernetes/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/posts/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/series/resource-management-in-kubernetes-cluster/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/series/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/tags/</loc>
-    <lastmod>2023-05-29T09:55:51+05:30</lastmod>
+    <lastmod>2023-06-18T02:19:35+05:30</lastmod>
   </url><url>
     <loc>http://kshnsink.com/tags/monitoring/</loc>
     <lastmod>2023-04-25T01:26:36+05:30</lastmod>
