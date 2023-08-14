@@ -276,10 +276,10 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
 </span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">resources</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requests</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">200m</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">limits</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">200m</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
@@ -294,10 +294,10 @@
 </span></span><span style="display:flex;"><span>  <span style="color:#f92672">containers</span>:
 </span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">resources</span>:
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">limits</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requests</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">200m</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">400Mi</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">requests</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">limits</span>:
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">cpu</span>: <span style="color:#ae81ff">400m</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">800Mi</span>
 </span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">...</span>
