@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>postgres on Kishan&#39;s World</title>
-    <link>http://kshnsink.com/tags/postgres/</link>
+    <link>http://kishansharma.in/tags/postgres/</link>
     <description>Recent content in postgres on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Mar 2023 02:09:41 +0530</lastBuildDate><atom:link href="http://kshnsink.com/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Mar 2023 02:09:41 +0530</lastBuildDate><atom:link href="http://kishansharma.in/tags/postgres/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Postgres Performance Tuning Manual: Indexes</title>
-      <link>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</link>
+      <link>http://kishansharma.in/posts/postgres-performance-tuning-manualindexes/</link>
       <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</guid>
+      <guid>http://kishansharma.in/posts/postgres-performance-tuning-manualindexes/</guid>
       <description>How to modify and improve query times in Postgres with the help of indexes.</description>
       <content:encoded><![CDATA[<p>In this post, we look at how to overcome slow queries by analysing them with <code>Explain</code> and <code>Analyze</code>, and using indexes to modify and enhance the query timings.</p>
 <p>Postgres supports different kinds of indexing on the table for
@@ -144,10 +144,10 @@ Execution Time: 0.228ms</p>
     
     <item>
       <title>Postgres Performance Tuning Manual: Query Plans</title>
-      <link>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</link>
+      <link>http://kishansharma.in/posts/postgres-performance-tuning-manualquery-plans/</link>
       <pubDate>Sun, 26 Mar 2023 00:11:32 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/postgres-performance-tuning-manualquery-plans/</guid>
+      <guid>http://kishansharma.in/posts/postgres-performance-tuning-manualquery-plans/</guid>
       <description>Is Postgres slowing down on you? Here&amp;#39;s how to identify areas of improvement using query plans</description>
       <content:encoded><![CDATA[<p>Postgres is one of the most widely used open source databases in the world. At GOJEK, a lot of our products depend on Postgres as well. A lot of major companies use Postgres as their main database however when you&rsquo;re building and operating at scale, the volume of data passing through the pipelines can slow down the most efficient systems.</p>
 <p>To optimise things in order to enhace performace, we can target the brain of the database whhich is <em>optimizer</em>. Optimizer interprets queries and determines the fastest method of execution. A single query optimization technique can increase database performance drastically.</p>

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Monitoring on Kishan&#39;s World</title>
-    <link>http://kshnsink.com/categories/monitoring/</link>
+    <link>http://kishansharma.in/categories/monitoring/</link>
     <description>Recent content in Monitoring on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 25 Apr 2023 01:26:36 +0530</lastBuildDate><atom:link href="http://kshnsink.com/categories/monitoring/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 25 Apr 2023 01:26:36 +0530</lastBuildDate><atom:link href="http://kishansharma.in/categories/monitoring/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kubernetes Prometheus Monitoring</title>
-      <link>http://kshnsink.com/posts/kubernetes-prometheus-monitoring/</link>
+      <link>http://kishansharma.in/posts/kubernetes-prometheus-monitoring/</link>
       <pubDate>Tue, 25 Apr 2023 01:26:36 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/kubernetes-prometheus-monitoring/</guid>
+      <guid>http://kishansharma.in/posts/kubernetes-prometheus-monitoring/</guid>
       <description>Using Prometheus to monitor kubernetes cluster</description>
       <content:encoded><![CDATA[<h2 id="monitoring-kubernetes-cluster-with-prometheus">Monitoring Kubernetes cluster with Prometheus</h2>
 <p>Prometheus is a widely used open-source monitoring system that is commonly used for monitoring Kubernetes environments. In Kubernetes, Prometheus can be used to monitor various Kubernetes components such as pods, nodes, and services. Kubernetes provides an API that allows Prometheus to discover the endpoints of the different components and collect metrics from them. These metrics can include CPU usage, memory usage, network traffic, and other relevant information. Prometheus also provides a variety of built-in visualization tools such as Grafana, which can be used to visualize the collected metrics. This allows users to create dashboards that provide a high-level view of the cluster&rsquo;s health and performance.</p>

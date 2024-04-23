@@ -2,77 +2,77 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Categories on Kishan&#39;s World</title>
-    <link>http://kshnsink.com/categories/</link>
+    <link>http://kishansharma.in/categories/</link>
     <description>Recent content in Categories on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kshnsink.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kishansharma.in/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kubernetes</title>
-      <link>http://kshnsink.com/categories/kubernetes/</link>
+      <link>http://kishansharma.in/categories/kubernetes/</link>
       <pubDate>Sun, 18 Jun 2023 02:19:35 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/kubernetes/</guid>
+      <guid>http://kishansharma.in/categories/kubernetes/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>Monitoring</title>
-      <link>http://kshnsink.com/categories/monitoring/</link>
+      <link>http://kishansharma.in/categories/monitoring/</link>
       <pubDate>Tue, 25 Apr 2023 01:26:36 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/monitoring/</guid>
+      <guid>http://kishansharma.in/categories/monitoring/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>GKE</title>
-      <link>http://kshnsink.com/categories/gke/</link>
+      <link>http://kishansharma.in/categories/gke/</link>
       <pubDate>Sun, 09 Apr 2023 12:22:06 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/gke/</guid>
+      <guid>http://kishansharma.in/categories/gke/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>Ingress</title>
-      <link>http://kshnsink.com/categories/ingress/</link>
+      <link>http://kishansharma.in/categories/ingress/</link>
       <pubDate>Sun, 09 Apr 2023 12:22:06 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/ingress/</guid>
+      <guid>http://kishansharma.in/categories/ingress/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>Database</title>
-      <link>http://kshnsink.com/categories/database/</link>
+      <link>http://kishansharma.in/categories/database/</link>
       <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/database/</guid>
+      <guid>http://kishansharma.in/categories/database/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>Postgres</title>
-      <link>http://kshnsink.com/categories/postgres/</link>
+      <link>http://kishansharma.in/categories/postgres/</link>
       <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/postgres/</guid>
+      <guid>http://kishansharma.in/categories/postgres/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>
     
     <item>
       <title>GKE-Networking</title>
-      <link>http://kshnsink.com/categories/gke-networking/</link>
+      <link>http://kishansharma.in/categories/gke-networking/</link>
       <pubDate>Thu, 23 Mar 2023 01:17:57 +0530</pubDate>
       
-      <guid>http://kshnsink.com/categories/gke-networking/</guid>
+      <guid>http://kishansharma.in/categories/gke-networking/</guid>
       <description></description>
       <content:encoded><![CDATA[]]></content:encoded>
     </item>

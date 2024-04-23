@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>index on Kishan&#39;s World</title>
-    <link>http://kshnsink.com/tags/index/</link>
+    <link>http://kishansharma.in/tags/index/</link>
     <description>Recent content in index on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 26 Mar 2023 02:09:41 +0530</lastBuildDate><atom:link href="http://kshnsink.com/tags/index/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Mar 2023 02:09:41 +0530</lastBuildDate><atom:link href="http://kishansharma.in/tags/index/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Postgres Performance Tuning Manual: Indexes</title>
-      <link>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</link>
+      <link>http://kishansharma.in/posts/postgres-performance-tuning-manualindexes/</link>
       <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/postgres-performance-tuning-manualindexes/</guid>
+      <guid>http://kishansharma.in/posts/postgres-performance-tuning-manualindexes/</guid>
       <description>How to modify and improve query times in Postgres with the help of indexes.</description>
       <content:encoded><![CDATA[<p>In this post, we look at how to overcome slow queries by analysing them with <code>Explain</code> and <code>Analyze</code>, and using indexes to modify and enhance the query timings.</p>
 <p>Postgres supports different kinds of indexing on the table for

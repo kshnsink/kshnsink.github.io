@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Ingress on Kishan&#39;s World</title>
-    <link>http://kshnsink.com/categories/ingress/</link>
+    <link>http://kishansharma.in/categories/ingress/</link>
     <description>Recent content in Ingress on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 09 Apr 2023 12:22:06 +0530</lastBuildDate><atom:link href="http://kshnsink.com/categories/ingress/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 09 Apr 2023 12:22:06 +0530</lastBuildDate><atom:link href="http://kishansharma.in/categories/ingress/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Intro to Gateway API</title>
-      <link>http://kshnsink.com/posts/intro-to-gateway-api/</link>
+      <link>http://kishansharma.in/posts/intro-to-gateway-api/</link>
       <pubDate>Sun, 09 Apr 2023 12:22:06 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/intro-to-gateway-api/</guid>
+      <guid>http://kishansharma.in/posts/intro-to-gateway-api/</guid>
       <description>Gateway API in Kubernetes</description>
       <content:encoded><![CDATA[<h2 id="ingress-vs-gateway-api">Ingress vs Gateway API</h2>
 <h3 id="ingress-supports-the-following">Ingress supports the following</h3>

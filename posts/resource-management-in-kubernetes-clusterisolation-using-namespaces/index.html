@@ -9,15 +9,15 @@
 <meta name="keywords" content="kubernetes, kubernetes resource management, kubernetes request limit, kubernetes namespace">
 <meta name="description" content="Understanding Isolation using Namespaces in Kubernetes">
 <meta name="author" content="Kishan Sharma">
-<link rel="canonical" href="http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/">
+<link rel="canonical" href="http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.5e075fac125b9f37cb03d7e9b44b819cc97ad60447f78258d02b5023d6ecec40.css" integrity="sha256-XgdfrBJbnzfLA9fptEuBnMl61gRH94JY0CtQI9bs7EA=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
     onload="hljs.initHighlightingOnLoad();"></script>
-<link rel="icon" href="http://kshnsink.com/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://kshnsink.com/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://kshnsink.com/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://kshnsink.com/apple-touch-icon.png">
-<link rel="mask-icon" href="http://kshnsink.com/safari-pinned-tab.svg">
+<link rel="icon" href="http://kishansharma.in/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://kishansharma.in/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://kishansharma.in/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://kishansharma.in/apple-touch-icon.png">
+<link rel="mask-icon" href="http://kishansharma.in/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
 <noscript>
@@ -59,14 +59,14 @@
 </noscript><meta property="og:title" content="Resource Management in Kubernetes Cluster: Isolation Using Namespaces" />
 <meta property="og:description" content="Understanding Isolation using Namespaces in Kubernetes" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/" />
-<meta property="og:image" content="http://kshnsink.com/img/isolation_using_namespace.png" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/" />
+<meta property="og:image" content="http://kishansharma.in/img/isolation_using_namespace.png" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-05-29T09:55:51+05:30" />
 <meta property="article:modified_time" content="2023-05-29T09:55:51+05:30" />
-<meta property="og:see_also" content="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/" /><meta property="og:see_also" content="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/" />
+<meta property="og:see_also" content="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/" /><meta property="og:see_also" content="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="http://kshnsink.com/img/isolation_using_namespace.png" />
+<meta name="twitter:image" content="http://kishansharma.in/img/isolation_using_namespace.png" />
 <meta name="twitter:title" content="Resource Management in Kubernetes Cluster: Isolation Using Namespaces"/>
 <meta name="twitter:description" content="Understanding Isolation using Namespaces in Kubernetes"/>
 
@@ -80,13 +80,13 @@
       "@type": "ListItem",
       "position":  1 ,
       "name": "Posts",
-      "item": "http://kshnsink.com/posts/"
+      "item": "http://kishansharma.in/posts/"
     }, 
     {
       "@type": "ListItem",
       "position":  2 ,
       "name": "Resource Management in Kubernetes Cluster: Isolation Using Namespaces",
-      "item": "http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/"
+      "item": "http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/"
     }
   ]
 }
@@ -104,7 +104,7 @@
   "articleBody": "Isolation using Namespaces In Kubernetes, namespaces are a way to create virtual clusters within a physical cluster, providing resource isolation and segregation. Think of it like kernel namespace which is a feature to isolate resources from each other. Analogous to a physical world example, think of it like a store in a shopping mall which has its own physical piece of land, electricity bill, water bill, interior design in a shared shopping complex. The shopping complex is our cluster and the store is a namespace within the cluster. A namespace is a logical boundary that allows you to divide cluster resources and create separate environments for different applications, teams, or projects.\nHow Namespaces create Isolation? Resource isolation using namespaces helps prevent interference between different workloads running on the same Kubernetes cluster. Let’s see how it can be achieved:\nNamespaced Scope Kubernetes resources such as pods, services, deployments, replica sets belong to a specific namespace. By default, resources are created in the default namespace if no namespace is specified. Each namespace provides an isolated environments where resources can be created and managed. This means that you could have a service called HelloWorld in a production namespace and a different service called HelloWorld in the test namespace and there won’t be any conflict.\nNamespaces are logically isolated from one another but they can still communicate with services in another namespace.\nService DNS names folllow the SERVICE.NAMESPACE.svc.cluster.local pattern. Kubernetes DNS service directory can easily locate any service by its name by using the expanded form of DNS addressing. To access HelloWorld service in the production namespace, simply use helloworld.production\nResource Allocation Namespaces allow you to allocate and limit resources separately for different workloads. For example, you can allocate specific amount of CPU and memory resources to a namespace and the resources within the namespace will be constrained by the specified limits. This is done with the help of ResourceQuotas and LimitRanges which are the objects used to control resource usage by the cluster administrator.\nResourceQuota The ResourceQuota is the total allocated resources for a particular namespace\napiVersion: v1 kind: ResourceQuota metadata: name: quota spec: hard: limits.cpu: \"50\" limits.memory: 100Gi requests.cpu: \"25\" requests.memory: 50Gi pods: \"50\" LimitRange LimitRange is used for managing constraints of resource allocation at a pod and container level within the namespace\napiVersion: \"v1\" kind: \"LimitRange\" metadata: name: \"resource-limits\" spec: limits: - type: \"Pod\" max: cpu: \"2\" memory: \"1Gi\" min: cpu: \"200m\" memory: \"6Mi\" - type: \"Container\" max: cpu: \"2\" memory: \"1Gi\" min: cpu: \"100m\" memory: \"4Mi\" default: cpu: \"300m\" memory: \"200Mi\" defaultRequest: cpu: \"200m\" memory: \"100Mi\" maxLimitRequestRatio: cpu: \"10\" Access Control Namespaces provide a mechanism for access control and permissions. You can define role-based access control(RBAC) policies to grant different levels of access to users or groups for resources within a namespace. This enables fine-grained control over who can access and modify(update) resources within a specific cluster and also within a namespace, enhancing security and isolation. In RBAC there are three components\nUsers and Groups Users are individuals who need access to the cluster, while groups are collections of users with similar roles\nRoles A role is a set of rules that define a set of permissions within a specific namespace. Roles can be created at the namespace level using Roleobject and are used to grant access to resources within the namespace. It is also possible to define the role which has access across the cluster using ClusterRole object\napiVersion: rbac.authorization.k8s.io/v1 kind: Role metadata: namespace: default name: pod-reader rules: - apiGroups: [\"\"] # \"\" indicates the core API group resources: [\"pods\"] verbs: [\"get\", \"watch\", \"list\"] apiVersion: rbac.authorization.k8s.io/v1 kind: ClusterRole metadata: # \"namespace\" omitted since ClusterRoles are not namespaced name: secret-reader rules: - apiGroups: [\"\"] # # at the HTTP level, the name of the resource for accessing Secret # objects is \"secrets\" resources: [\"secrets\"] verbs: [\"get\", \"watch\", \"list\"] RoleBindings and ClusterRoleBindings RoleBindings associate a role with a user or a group, granting the defined permissions to the user/group within a specific namespace.\napiVersion: rbac.authorization.k8s.io/v1 # This role binding allows \"jane\" to read pods in the \"default\" namespace. # You need to already have a Role named \"pod-reader\" in that namespace. kind: RoleBinding metadata: name: read-pods namespace: default subjects: # You can specify more than one \"subject\" - kind: User name: jane # \"name\" is case sensitive apiGroup: rbac.authorization.k8s.io roleRef: # \"roleRef\" specifies the binding to a Role / ClusterRole kind: Role #this must be Role or ClusterRole name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to apiGroup: rbac.authorization.k8s.io ClusterRoleBindings on the other hand, associate a role with a user/group across the entire cluster, granting permissions across all namespaces\napiVersion: rbac.authorization.k8s.io/v1 # This role binding allows \"dave\" to read secrets in the \"development\" namespace. # You need to already have a ClusterRole named \"secret-reader\". kind: RoleBinding metadata: name: read-secrets # # The namespace of the RoleBinding determines where the permissions are granted. # This only grants permissions within the \"development\" namespace. namespace: development subjects: - kind: User name: dave # Name is case sensitive apiGroup: rbac.authorization.k8s.io roleRef: kind: ClusterRole name: secret-reader apiGroup: rbac.authorization.k8s.io Implementing RBAC enforces strong access controls ensuring that only authorized users/groups have appropriate level of access to cluster resources.\nBy leveraging namespaces, Kubernetes provides a powerful mechanism for isolating and managing resources within a cluster. It allows you to run multiple applications or projects on the same cluster without interference or noisy neighbour problem and provides control over resource allocation, access control, and resource quotas at the namespace level.\n",
   "wordCount" : "920",
   "inLanguage": "en",
-  "image":"http://kshnsink.com/img/isolation_using_namespace.png","datePublished": "2023-05-29T09:55:51+05:30",
+  "image":"http://kishansharma.in/img/isolation_using_namespace.png","datePublished": "2023-05-29T09:55:51+05:30",
   "dateModified": "2023-05-29T09:55:51+05:30",
   "author":[{
     "@type": "Person",
@@ -112,14 +112,14 @@
   }],
   "mainEntityOfPage": {
     "@type": "WebPage",
-    "@id": "http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/"
+    "@id": "http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Kishan's World",
     "logo": {
       "@type": "ImageObject",
-      "url": "http://kshnsink.com/favicon.ico"
+      "url": "http://kishansharma.in/favicon.ico"
     }
   }
 }
@@ -141,7 +141,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://kshnsink.com/" accesskey="h" title="Kishan Sharma (Alt + H)">Kishan Sharma</a>
+            <a href="http://kishansharma.in/" accesskey="h" title="Kishan Sharma (Alt + H)">Kishan Sharma</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -167,27 +167,27 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="http://kshnsink.com/categories/" title="Categories">
+                <a href="http://kishansharma.in/categories/" title="Categories">
                     <span>Categories</span>
                 </a>
             </li>
             <li>
-                <a href="http://kshnsink.com/tags/" title="Tags">
+                <a href="http://kishansharma.in/tags/" title="Tags">
                     <span>Tags</span>
                 </a>
             </li>
             <li>
-                <a href="http://kshnsink.com/archives/" title="Archives">
+                <a href="http://kishansharma.in/archives/" title="Archives">
                     <span>Archives</span>
                 </a>
             </li>
             <li>
-                <a href="http://kshnsink.com/series/" title="Series">
+                <a href="http://kishansharma.in/series/" title="Series">
                     <span>Series</span>
                 </a>
             </li>
             <li>
-                <a href="http://kshnsink.com/search/" title="Search (Alt &#43; /)" accesskey=/>
+                <a href="http://kishansharma.in/search/" title="Search (Alt &#43; /)" accesskey=/>
                     <span>Search</span>
                 </a>
             </li>
@@ -198,7 +198,7 @@
 
 <article class="post-single">
   <header class="post-header">
-    <div class="breadcrumbs"><a href="http://kshnsink.com/">Home</a>&nbsp;»&nbsp;<a href="http://kshnsink.com/posts/">Posts</a></div>
+    <div class="breadcrumbs"><a href="http://kishansharma.in/">Home</a>&nbsp;»&nbsp;<a href="http://kishansharma.in/posts/">Posts</a></div>
     <h1 class="post-title">
       Resource Management in Kubernetes Cluster: Isolation Using Namespaces
     </h1>
@@ -218,7 +218,7 @@
         
             
                 <li class="post-description">
-                    <a href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/">
+                    <a href="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/">
                         Part 1: Resource Management in Kubernetes Cluster: Understanding Resources
                     </a>
                 </li>
@@ -232,7 +232,7 @@
         
             
                 <li class="post-description">
-                    <a href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/">
+                    <a href="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/">
                         Part 3: Resource Mangement in Kubernetes Cluster: Sizing a Kubernetes Cluster
                     </a>
                 </li>
@@ -241,8 +241,8 @@
     </ul>
 </div>
  
-<figure class="entry-cover"><a href="http://kshnsink.com/img/isolation_using_namespace.png" target="_blank"
-            rel="noopener noreferrer"><img loading="lazy" src="http://kshnsink.com/img/isolation_using_namespace.png" alt=""></a>
+<figure class="entry-cover"><a href="http://kishansharma.in/img/isolation_using_namespace.png" target="_blank"
+            rel="noopener noreferrer"><img loading="lazy" src="http://kishansharma.in/img/isolation_using_namespace.png" alt=""></a>
         
 </figure><div class="toc">
     <details  open>
@@ -426,7 +426,7 @@
         
             
                 <li class="post-description">
-                    <a href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/">
+                    <a href="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/">
                         Part 1: Resource Management in Kubernetes Cluster: Understanding Resources
                     </a>
                 </li>
@@ -440,7 +440,7 @@
         
             
                 <li class="post-description">
-                    <a href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/">
+                    <a href="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/">
                         Part 3: Resource Mangement in Kubernetes Cluster: Sizing a Kubernetes Cluster
                     </a>
                 </li>
@@ -452,15 +452,15 @@
 
   <footer class="post-footer">
     <ul class="post-tags">
-      <li><a href="http://kshnsink.com/tags/kubernetes/">kubernetes</a></li>
+      <li><a href="http://kishansharma.in/tags/kubernetes/">kubernetes</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/">
+  <a class="prev" href="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/">
     <span class="title">« Prev</span>
     <br>
     <span>Resource Mangement in Kubernetes Cluster: Sizing a Kubernetes Cluster</span>
   </a>
-  <a class="next" href="http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/">
+  <a class="next" href="http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/">
     <span class="title">Next »</span>
     <br>
     <span>Resource Management in Kubernetes Cluster: Understanding Resources</span>
@@ -470,42 +470,42 @@
 
 <div class="share-buttons">
     <a target="_blank" rel="noopener noreferrer" aria-label="share Resource Management in Kubernetes Cluster: Isolation Using Namespaces on twitter"
-        href="https://twitter.com/intent/tweet/?text=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;url=http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f&amp;hashtags=kubernetes">
+        href="https://twitter.com/intent/tweet/?text=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;url=http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f&amp;hashtags=kubernetes">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-253.927,424.544c135.939,0 210.268,-112.643 210.268,-210.268c0,-3.218 0,-6.437 -0.153,-9.502c14.406,-10.421 26.973,-23.448 36.935,-38.314c-13.18,5.824 -27.433,9.809 -42.452,11.648c15.326,-9.196 26.973,-23.602 32.49,-40.92c-14.252,8.429 -30.038,14.56 -46.896,17.931c-13.487,-14.406 -32.644,-23.295 -53.946,-23.295c-40.767,0 -73.87,33.104 -73.87,73.87c0,5.824 0.613,11.494 1.992,16.858c-61.456,-3.065 -115.862,-32.49 -152.337,-77.241c-6.284,10.881 -9.962,23.601 -9.962,37.088c0,25.594 13.027,48.276 32.95,61.456c-12.107,-0.307 -23.448,-3.678 -33.41,-9.196l0,0.92c0,35.862 25.441,65.594 59.311,72.49c-6.13,1.686 -12.72,2.606 -19.464,2.606c-4.751,0 -9.348,-0.46 -13.946,-1.38c9.349,29.426 36.628,50.728 68.965,51.341c-25.287,19.771 -57.164,31.571 -91.8,31.571c-5.977,0 -11.801,-0.306 -17.625,-1.073c32.337,21.15 71.264,33.41 112.95,33.41Z" />
         </svg>
     </a>
     <a target="_blank" rel="noopener noreferrer" aria-label="share Resource Management in Kubernetes Cluster: Isolation Using Namespaces on linkedin"
-        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f&amp;title=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;summary=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;source=http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
+        href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f&amp;title=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;summary=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;source=http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
         </svg>
     </a>
     <a target="_blank" rel="noopener noreferrer" aria-label="share Resource Management in Kubernetes Cluster: Isolation Using Namespaces on reddit"
-        href="https://reddit.com/submit?url=http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f&title=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces">
+        href="https://reddit.com/submit?url=http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f&title=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
         </svg>
     </a>
     <a target="_blank" rel="noopener noreferrer" aria-label="share Resource Management in Kubernetes Cluster: Isolation Using Namespaces on facebook"
-        href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
+        href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
         </svg>
     </a>
     <a target="_blank" rel="noopener noreferrer" aria-label="share Resource Management in Kubernetes Cluster: Isolation Using Namespaces on whatsapp"
-        href="https://api.whatsapp.com/send?text=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces%20-%20http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
+        href="https://api.whatsapp.com/send?text=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces%20-%20http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
         <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
             <path
                 d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
         </svg>
     </a>
     <a target="_blank" rel="noopener noreferrer" aria-label="share Resource Management in Kubernetes Cluster: Isolation Using Namespaces on telegram"
-        href="https://telegram.me/share/url?text=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;url=http%3a%2f%2fkshnsink.com%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
+        href="https://telegram.me/share/url?text=Resource%20Management%20in%20Kubernetes%20Cluster%3a%20Isolation%20Using%20Namespaces&amp;url=http%3a%2f%2fkishansharma.in%2fposts%2fresource-management-in-kubernetes-clusterisolation-using-namespaces%2f">
         <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
             <path
                 d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -532,7 +532,7 @@
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="http://kshnsink.com/">Kishan&#39;s World</a></span>
+    <span>&copy; 2024 <a href="http://kishansharma.in/">Kishan&#39;s World</a></span>
     
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>kubernetes on Kishan&#39;s World</title>
-    <link>http://kshnsink.com/tags/kubernetes/</link>
+    <link>http://kishansharma.in/tags/kubernetes/</link>
     <description>Recent content in kubernetes on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kshnsink.com/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kishansharma.in/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Resource Mangement in Kubernetes Cluster: Sizing a Kubernetes Cluster</title>
-      <link>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</link>
+      <link>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</link>
       <pubDate>Sun, 18 Jun 2023 02:19:35 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</guid>
+      <guid>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</guid>
       <description>Sizing a Kubernetes cluster with an example</description>
       <content:encoded><![CDATA[<h1 id="introduction">Introduction</h1>
 <p>When sizing a Google Kubernetes Engine (GKE) cluster, several factors come into play such as the expected workload, resource requirements, performance needs etc. Similar to performance, scalability is a very critical factor to the success of a growing organisation which should be considered during the design of a cluster.</p>
@@ -101,10 +101,10 @@
     
     <item>
       <title>Resource Management in Kubernetes Cluster: Isolation Using Namespaces</title>
-      <link>http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</link>
+      <link>http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</link>
       <pubDate>Mon, 29 May 2023 09:55:51 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</guid>
+      <guid>http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</guid>
       <description>Understanding Isolation using Namespaces in Kubernetes</description>
       <content:encoded><![CDATA[<h1 id="isolation-using-namespaces">Isolation using Namespaces</h1>
 <p>In Kubernetes, namespaces are a way to create virtual clusters within a physical cluster, providing resource isolation and segregation. Think of it like kernel namespace which is a feature to isolate resources from each other. Analogous to a physical world example, think of it like a store in a shopping mall which has its own physical piece of land, electricity bill, water bill, interior design in a shared shopping complex. The shopping complex is our cluster and the store is a namespace within the cluster. A namespace is a logical boundary that allows you to divide cluster resources and create separate environments for different applications, teams, or projects.</p>
@@ -237,10 +237,10 @@
     
     <item>
       <title>Resource Management in Kubernetes Cluster: Understanding Resources</title>
-      <link>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</link>
+      <link>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</link>
       <pubDate>Thu, 11 May 2023 03:52:06 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</guid>
+      <guid>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</guid>
       <description>Understanding Kubernetes resources and Quality of Service classes</description>
       <content:encoded><![CDATA[<p>Kubernetes is a container orchestration platform that allows you to manage and automate the deployment, scaling and management of containerised application. In this post we will look into the resource management in Kubernetes which involves allocating resources such as CPU, memory to the containers running in a cluster</p>
 <h1 id="understanding-resource">Understanding Resource</h1>
@@ -323,10 +323,10 @@
     
     <item>
       <title>Kubernetes Prometheus Monitoring</title>
-      <link>http://kshnsink.com/posts/kubernetes-prometheus-monitoring/</link>
+      <link>http://kishansharma.in/posts/kubernetes-prometheus-monitoring/</link>
       <pubDate>Tue, 25 Apr 2023 01:26:36 +0530</pubDate>
       
-      <guid>http://kshnsink.com/posts/kubernetes-prometheus-monitoring/</guid>
+      <guid>http://kishansharma.in/posts/kubernetes-prometheus-monitoring/</guid>
       <description>Using Prometheus to monitor kubernetes cluster</description>
       <content:encoded><![CDATA[<h2 id="monitoring-kubernetes-cluster-with-prometheus">Monitoring Kubernetes cluster with Prometheus</h2>
 <p>Prometheus is a widely used open-source monitoring system that is commonly used for monitoring Kubernetes environments. In Kubernetes, Prometheus can be used to monitor various Kubernetes components such as pods, nodes, and services. Kubernetes provides an API that allows Prometheus to discover the endpoints of the different components and collect metrics from them. These metrics can include CPU usage, memory usage, network traffic, and other relevant information. Prometheus also provides a variety of built-in visualization tools such as Grafana, which can be used to visualize the collected metrics. This allows users to create dashboards that provide a high-level view of the cluster&rsquo;s health and performance.</p>
