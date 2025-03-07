@@ -5,12 +5,11 @@
     <link>http://kishansharma.in/tags/prometheus/</link>
     <description>Recent content in prometheus on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Tue, 25 Apr 2023 01:26:36 +0530</lastBuildDate><atom:link href="http://kishansharma.in/tags/prometheus/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="http://kishansharma.in/tags/prometheus/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kubernetes Prometheus Monitoring</title>
       <link>http://kishansharma.in/posts/kubernetes-prometheus-monitoring/</link>
-      <pubDate>Tue, 25 Apr 2023 01:26:36 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://kishansharma.in/posts/kubernetes-prometheus-monitoring/</guid>
       <description>Using Prometheus to monitor kubernetes cluster</description>

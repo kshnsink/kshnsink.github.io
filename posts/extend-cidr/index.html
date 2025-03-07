@@ -61,8 +61,8 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://kishansharma.in/posts/extend-cidr/" />
 <meta property="og:image" content="http://kishansharma.in/img/multi-pod-cidr.svg" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2023-03-23T01:17:57+05:30" />
-<meta property="article:modified_time" content="2023-03-23T01:17:57+05:30" />
+
+
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="http://kishansharma.in/img/multi-pod-cidr.svg" />
@@ -103,8 +103,8 @@
   "articleBody": "A VPC native cluster uses three unique subnet ranges to allocate IPs to Nodes, Pods and Services.\nPrimary subnet IP address is used for Nodes. Node IP provides connectivity from control components like kube-proxy and kubelet to the Kubernetes API server. Node IP is the node’s connection to the rest of the cluster.\nSecondary subnet IP address is used for Pods. Pod IP addresses are natively routable within the cluster’s VPC network and other VPC networks connected to it by VPC Network Peering. By default GKE allocates /24 alias ie., 256 alias IP addresses for 110 pods for each of the nodes.\nAnother Secondary subnet IP address is used for services. Each Service has an IP address, called the ClusterIP, assigned from the cluster’s VPC network.\nIn a VPC native cluster, these addresses are reserved before the creation of cluster to eliminate conflict and overlapping of IPs.\nWhat happens when the secondary IP range exhausts?\nOnce the secondary IP address exhausts no Pods can be scheduled. The secondary Pod IP range cannot be changed once created. There is a provision to allocate a separate IP range to create separate node pools in the cluster. These two IP ranges are going to be discontigous and there are some caveats which needs to be taken care of.\nIf you use ip-masq-agent configured with the nonMasqueradeCIDRs parameter, you must update the nonMasqueradeCIDRs to include all Pod CIDR ranges.\nIf you use NetworkPolicy configured with ipBlock to specify traffic, you must update the cidr value to include all Pod CIDR ranges.\nThe other approach is to create a bigger CIDR range node pool and move workloads from the existing node pool to the newly created one. Steps for the same:\nMark the nodes in the existing node pool to be non schedulable by using the kubernetes cordon command\nkubectl cordon Redeploy the application and verify if the nodes are scheduling in the nodes of new node pool\nOnce verified, redeploy and move all the workloads in the new node pool.\nClean up and delete the old node pool.\n",
   "wordCount" : "345",
   "inLanguage": "en",
-  "image":"http://kishansharma.in/img/multi-pod-cidr.svg","datePublished": "2023-03-23T01:17:57+05:30",
-  "dateModified": "2023-03-23T01:17:57+05:30",
+  "image":"http://kishansharma.in/img/multi-pod-cidr.svg","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
   "author":[{
     "@type": "Person",
     "name": "Kishan Sharma"
@@ -204,7 +204,7 @@
     <div class="post-description">
       Guide to extend CIDR Range in the existing GKE cluster
     </div>
-    <div class="post-meta">&lt;span title=&#39;2023-03-23 01:17:57 &#43;0530 IST&#39;&gt;March 23, 2023&lt;/span&gt;&amp;nbsp;·&amp;nbsp;2 min&amp;nbsp;·&amp;nbsp;Kishan Sharma
+    <div class="post-meta">Kishan Sharma
 
 </div>
   </header> 
@@ -251,6 +251,11 @@
     <span class="title">« Prev</span>
     <br>
     <span>Postgres Performance Tuning Manual: Query Plans</span>
+  </a>
+  <a class="next" href="http://kishansharma.in/posts/intro-to-gateway-api/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Intro to Gateway API</span>
   </a>
 </nav>
 
@@ -319,7 +324,7 @@
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="http://kishansharma.in/">Kishan&#39;s World</a></span>
+    <span>&copy; 2025 <a href="http://kishansharma.in/">Kishan&#39;s World</a></span>
     
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

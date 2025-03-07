@@ -61,8 +61,8 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://kishansharma.in/posts/intro-to-gateway-api/" />
 <meta property="og:image" content="http://kishansharma.in/img/gateway_01.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2023-04-09T12:22:06+05:30" />
-<meta property="article:modified_time" content="2023-04-09T12:22:06+05:30" />
+
+
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="http://kishansharma.in/img/gateway_01.png" />
@@ -103,8 +103,8 @@
   "articleBody": "Ingress vs Gateway API Ingress supports the following HTTP host matching HTTP path matching TLS termination Routing to service:port For many different load balancer implementations Gateway adds HTTP header-based matching HTTP header manipulation Weighted traffic splitting Traffic mirroring Role-oriented resource model and has extensibility for Arbitrary backend CRD references (buckets, functions, etc) Routing for other protocols(gRPC) Custom parameters or configuration (LB algos, custom match types, etc) Gateway controller manage the network infrastructure on behalf of Gateway resources. There are one or more Gateway classes supported by a Gateway controller. Gateways are created from the Gateway classes and they model the actual network infrastructure which processes the traffic. Gateways can model many different kinds of data planes that perform routing.\nThen comes the route resources. Gateway and the HTTP route resources do what the ingress resource does as a single resource. This separation allows different roles to deploy and own that resource. It allows a cluster administrator to mange the Gateway and the policies attached to that Gateway, while individual development teams manage the routing to their application on their own.\nRoles involved Infrastructure Provider ensures that each cluster is provisioned with a GatewayClass ****for external load balancers\nkind: GatewayClass metadata: name: external-lb spec: controller: mygroup.io/gateway parametersRef: group: k8s.mygroup.io kind: GatewayClassParams name: external-lb Cluster Operator Creates a Gateway for the mygroup team when setting up the cluster\nkind: Gateway metadata: name: mygroup-external spec: gatewayClassName: external-lb listeners: - protocol: HTTP port: 80 routes: kind: HTTPRoute selector: matchLebels: gateway: mygroup-external Application Developer creates an HTTPRoute to route external traffic to the application\nkind: HTTPRoute metadata: name: mygroup labels: gateway: mygroup-external spec: hostnames: - mygroup.io rules: - matches: path: value: /groups forwardTo: serviceName: mygroup-groups port: 8080 Features Canary Rollout Application developer wants to do a canary rollout\nkind: HTTPRoute ... rules: - matches: path: value: /groups forwardTo: - serviceName: mygroup-groups port: 8080 weight: 90 - serviceName: mygroup-groups-canary port: 8080 weight: 10 Upgrade Load Balancer Cluster operator wants to upgrade to the newest kind of LB\nkind: Gateway metadata: name: mygroup-external spec: gatewayClassName: new-external-lb listeners: - protocol: HTTP port: 80 routes: kind: HTTPRoute selector: matchLebels: gateway: mygroup-external Update Infrastructure Provider Infrastructure provider wants to provision on a new provider\nkind: GatewayClass metadata: name: external-lb spec: controller: new-vendor.io/gateway parametersRef: group: k8s.mygroup.io kind: GatewayClassParams name: external-lb ",
   "wordCount" : "379",
   "inLanguage": "en",
-  "image":"http://kishansharma.in/img/gateway_01.png","datePublished": "2023-04-09T12:22:06+05:30",
-  "dateModified": "2023-04-09T12:22:06+05:30",
+  "image":"http://kishansharma.in/img/gateway_01.png","datePublished": "0001-01-01T00:00:00Z",
+  "dateModified": "0001-01-01T00:00:00Z",
   "author":[{
     "@type": "Person",
     "name": "Kishan Sharma"
@@ -204,7 +204,7 @@
     <div class="post-description">
       Gateway API in Kubernetes
     </div>
-    <div class="post-meta">&lt;span title=&#39;2023-04-09 12:22:06 &#43;0530 IST&#39;&gt;April 9, 2023&lt;/span&gt;&amp;nbsp;·&amp;nbsp;2 min&amp;nbsp;·&amp;nbsp;Kishan Sharma
+    <div class="post-meta">Kishan Sharma
 
 </div>
   </header> 
@@ -380,15 +380,10 @@
       <li><a href="http://kishansharma.in/tags/ingress/">ingress</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://kishansharma.in/posts/kubernetes-prometheus-monitoring/">
+  <a class="prev" href="http://kishansharma.in/posts/extend-cidr/">
     <span class="title">« Prev</span>
     <br>
-    <span>Kubernetes Prometheus Monitoring</span>
-  </a>
-  <a class="next" href="http://kishansharma.in/posts/postgres-performance-tuning-manualindexes/">
-    <span class="title">Next »</span>
-    <br>
-    <span>Postgres Performance Tuning Manual: Indexes</span>
+    <span>Extend CIDR</span>
   </a>
 </nav>
 
@@ -457,7 +452,7 @@
     </main>
     
 <footer class="footer">
-    <span>&copy; 2024 <a href="http://kishansharma.in/">Kishan&#39;s World</a></span>
+    <span>&copy; 2025 <a href="http://kishansharma.in/">Kishan&#39;s World</a></span>
     
 </footer>
 <a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">

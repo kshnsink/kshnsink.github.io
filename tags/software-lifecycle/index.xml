@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>software lifecycle on Kishan&#39;s World</title>
+    <link>http://kishansharma.in/tags/software-lifecycle/</link>
+    <description>Recent content in software lifecycle on Kishan&#39;s World</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="http://kishansharma.in/tags/software-lifecycle/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Migrating 250 Applications to GoCloud: Overcoming Engineering &amp; Operational Challenges</title>
+      <link>http://kishansharma.in/posts/moving-out-of-snowflake/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://kishansharma.in/posts/moving-out-of-snowflake/</guid>
+      <description>Journey of moving away from outdated Kubernetes cluster to stable version</description>
+      <content:encoded><![CDATA[<h1 id="problem-statement">Problem Statement</h1>
+<p>To migrate 250 applications running on outdated Kubernetes clusters presented a significant challenge, requiring the upgrade of <strong>~127 clusters</strong> and transitioning workloads to a modern infrastructure. This migration involved deploying application workloads onto <strong>GoCloud</strong>, a new Kubernetes-based platform, while utilizing <strong>Fabric</strong>(more about Fabric in the later sections) for traffic shaping. The effort aimed to improve  <strong>security</strong>, <strong>scalability</strong>, and <strong>operational efficiency</strong> while achieving <strong>zero downtime and disruptions</strong>.</p>
+<h1 id="motivations--business-drivers">Motivations &amp; Business Drivers</h1>
+<p>The decision to migrate stemmed from multiple critical factors that impacted the reliability and scalability of the existing infrastructure:</p>
+<ul>
+<li><strong>Security &amp; Compliance</strong>: Outdated Kubernetes clusters posed security vulnerabilities, lacked vendor support, and risked non-compliance with industry regulations.</li>
+<li><strong>Maintainability &amp; Operational Overhead</strong>: Managing fragmented and outdated clusters increased operational complexity, requiring excessive manual interventions and workarounds.</li>
+<li><strong>Performance &amp; Scalability</strong>: The legacy infrastructure struggled to meet the growing demand for efficient scaling and traffic management, affecting application performance.</li>
+<li><strong>Standardization &amp; Efficiency</strong>: Transitioning to <strong>GoCloud</strong> and <strong>Fabric</strong> aimed to provid a unified infrastructure, enabling streamlined operations, better traffic control, and automation capabilities.</li>
+</ul>
+<blockquote>
+<p>This migration was not just an upgrade but a strategic move towards a <strong>modern, resilient, and scalable</strong> platform.</p>
+</blockquote>
+<h1 id="engineering-challenges--solutions">Engineering Challenges &amp; Solutions</h1>
+<h2 id="why-so-many-of-kubernetes-clusters">Why So Many of Kubernetes Clusters</h2>
+<p>Thinking of 127 distinct Kubernetes clusters raises questions but there were conscious choices taken in the past(not going into details) which allowed the numbers to increase. It is crucial to stress that application teams lacked governance when it came to setting up and maintaining Kubernetes clusters. This seems fine in the short term; as an application developer interested in infrastructure management, I am certain that I can oversee both product development and infrastructure deployment; however, such choices necessitate long-term planning. Every team experiences transitions from time to time. While it is possible to have a developer who is comfortable managing both the infrastructure and the application, it is not reasonable to expect the same thing when that developer leaves the team and is replaced. A more distinct division of ownership was required, as was clarification on whether an application developer should concentrate primarily on the features and scalability of the application or if they must manage infrastructure and deployments in addition to the application/business requirements. The organization must establish component ownership and governance.
+I believe this was not thoroughly looked upon, which is why the organization had almost 127 Kubernetes clusters. What&rsquo;s funny is that the infrastructure team only managed about 40 of these clusters.</p>
+<h2 id="new-deployment-infrastructure---gocloud">New Deployment Infrastructure - GoCloud</h2>
+<p>Our team identified the gaps in the previous implementation of managing container deployments and started working on a multi-tenant Kubernetes Cluster Platform. The distinct features of the new platform included -</p>
+<ul>
+<li><strong>Namespace Isolation</strong>: Kubernetes namespaces are a way to create logical partitions within a cluster, providing <strong>resource isolation and segregation</strong>(no noisy neighbours 🙅‍♂️). Think of it like kernel namespace which is a feature to isolate resources from each other. Each tenant in GoCloud should have its own namespace, ensuring isolation between resources such as pods, services, and configurations.</li>
+<li><strong>Resource Quotas:</strong> Use Kubernetes resource quotas to <strong>limit the amount of CPU, memory,</strong> and other resources that each tenant can consume within their namespace. This prevents one tenant from monopolizing cluster resources. At the same time, this allows us to perform more accurate capacity planning.</li>
+<li><strong>Access Control</strong>: Namespaces provide a mechanism for access control and permissions. In the GoCloud cluster, we define role-based access control(RBAC) policies/personas, to grant different levels of access to users or groups for resources within a namespace. This enables <strong>fine-grained control</strong> over who can access and modify(update) resources within a specific cluster and also within a namespace, enhancing security and isolation.</li>
+<li><strong>Namespace Labelling</strong>: All the applications and namespaces have standard labels in GoCloud clusters to categorize and identify tenants or applications. This helps with resource <strong>management, monitoring, billing and automation</strong>.</li>
+<li><strong>Cluster Autoscaling</strong>: GoCloud cluster supports cluster autoscaling policies to ensure that it can handle the resource demands of multiple tenants efficiently. GoCloud also supports <strong>HorizontalPodAutoscalar(HPA)</strong> to automatically update the workload resources such as Deployments, scaling them to match the demand for applications in the cluster.</li>
+<li><strong>Observability</strong>: GoCloud clusters are equipped with the default logging tool <strong>Barito</strong> and the monitoring tool <strong>Prometheus</strong> to centrally manage logging and monitoring to track the performance and health of the cluster, as well as to detect and respond to security incidents. Applications can use <strong>grafana agent as sidecars</strong> to push application metrics.</li>
+<li><strong>Billing and Cost Allocation:</strong> Cost allocation in GoCloud clusters is achieved with the use of labels to attribute cluster costs to individual tenants or teams based on resource consumption.</li>
+</ul>
+<h2 id="implementing-fabric-for-traffic-management">Implementing Fabric for Traffic Management</h2>
+<p>Fabric is a multi-tenant traffic-shaping layer that acts as an edge proxy for services inside a VPC. It allows cluster fungibility by providing advanced traffic control for deployed workloads and can be used for North-South as well as East-West traffic. Built on Gloo Edge, Fabric operates as an abstracted proxy and serves as a routing layer between the API Gateway (Kong) and the application deployment infrastructure. It solves the challenges of managing ingress traffic into the application architectures, not limited to Kubernetes. Backend services can be discovered when running or registered in Kubernetes, VMs, etc.</p>
+<p>Fabric is an internal traffic management system to bridge the gap, with the following goals.</p>
+<ul>
+<li>Simplify service discovery</li>
+<li>High performance L4/L7 request routing</li>
+<li>Improve service reliability and resiliency
+<ul>
+<li>multiple backends with rich traffic control mechanism</li>
+<li>fast and reliable traffic-draining control</li>
+</ul>
+</li>
+<li>Expedite migration out of legacy network</li>
+<li>Better security stance with TLS encryption</li>
+</ul>
+<blockquote>
+<p>Till now it was more about the problems and how we ended up in creating a new infrastructure platform with the desired features. The next section covers the operational challenges and the process we established to achieve the migration(or upgrade) of ~127 clusters 👇</p>
+</blockquote>
+<h2 id="migrating-250-applications">Migrating 250 Applications</h2>
+<p>Moving 250 applications to the new infrastructure posed multiple challenges, requiring both technical and operational strategies for a smooth transition:</p>
+<h3 id="setting-up-standardized-migration-processes">Setting Up Standardized Migration Processes</h3>
+<p>A well-defined migration process was crucial to ensure consistency of application deployment and minimize risks. We created structured processes around resource sizing of the namespace as well as playbooks for onboarding an application workload covering application dependencies, rollout strategies, and rollback plans.</p>
+<h3 id="aligning-stakeholders-across-teams">Aligning Stakeholders Across Teams</h3>
+<p>Since multiple teams were involved, clear communication and collaboration was essential. Regular cross-team syncs and status updates helped align priorities and mitigate bottlenecks.</p>
+<h3 id="overcoming-resistance-to-change">Overcoming Resistance to Change</h3>
+<p>Many teams were hesitant to prioritize migration over their BAU tasks. Conducting awareness sessions, demonstrating the benefits of the new infrastructure, and providing hands-on migration support helped address concerns.</p>
+<h3 id="building-trust-in-the-new-infrastructure">Building Trust in the New Infrastructure</h3>
+<p>To gain stakeholder confidence, we onboarded one of the most crucial application, driver allocations service by pairing with the owner team and created early adopter programs. Demonstrating successful transitions helped teams trust GoCloud and Fabric as reliable platforms. I cannot emphasize more why this was one of the most important things which we did.</p>
+<h3 id="handling-diverse-tech-stacks--dependencies">Handling Diverse Tech Stacks &amp; Dependencies</h3>
+<p>Applications were built on varied frameworks and libraries, requiring compatibility checks.</p>
+<h3 id="cicd-pipeline-adjustments">CI/CD Pipeline Adjustments</h3>
+<p>Created well defined documentation for Continuous Integration and Deployment pipelines to be reconfigured to align with GoCloud’s deployment framework, ensuring automation and smooth rollouts.</p>
+<h3 id="post-migration-support--continuous-improvement">Post-Migration Support &amp; Continuous Improvement</h3>
+<p>Establishing feedback loops and ongoing monitoring reassured stakeholders that any issues would be promptly addressed, further strengthening trust in the new infrastructure.</p>
+<h2 id="time-sensitivity--execution-strategy">Time Sensitivity &amp; Execution Strategy</h2>
+<p>Given the urgency imposed by <strong>external deadlines and security vulnerabilities</strong>, a structured execution strategy was critical. The migration was executed in broadly the following key phases:</p>
+<ol>
+<li><strong>Pilot Phase</strong>: A small subset of applications was migrated first in complete collaboration with application owners to identify potential risks and refine the migration process.</li>
+<li><strong>Early Adopters</strong>: Key teams volunteered to migrate their applications, validating stability before a wider rollout.</li>
+<li><strong>Bulk Migration</strong>: Before this phase we had proper documentations available, migration processes were established and the majority of applications were migrated in parallel workstreams, ensuring minimal impact on production workloads.</li>
+<li><strong>Post-Migration Stabilization</strong>: Monitoring, fine-tuning, and addressing any residual issues ensured a smooth transition.</li>
+</ol>
+<h1 id="key-takeaways--lessons-learned">Key Takeaways &amp; Lessons Learned</h1>
+<ul>
+<li><strong>Early Buy-in from Teams</strong>: Engaging stakeholders early reduced resistance and streamlined decision-making.</li>
+<li><strong>Gaining Trust</strong>: Application owners were managing their own deployments, understanding their requirements and building a nearly complete product to meet major requirements and helping them out in migration was important to gain trust. Once trust was established, it was a word of mouth which helped application owners to engage themselves in the migration.</li>
+<li><strong>Automation is Key</strong>: Automating migration workflows significantly reduced errors and manual workload.</li>
+<li><strong>Gradual Migration Approach</strong>: Phased rollouts helped mitigate risks and provided learnings for subsequent migrations.</li>
+<li><strong>Continuous Monitoring &amp; Feedback Loops</strong>: During migration, collecting feedbacks and improving the process and Post-migration monitoring allowed for immediate issue resolution and optimization.</li>
+</ul>
+<h1 id="conclusion">Conclusion</h1>
+<p>The successful migration of 250 applications to GoCloud resulted in <strong>improved scalability, security, and operational efficiency</strong>. The adoption of Fabric for traffic shaping further enhanced <strong>resilience and reliability</strong>. This migration not only modernized the infrastructure but also set a strong foundation for future growth.</p>
+]]></content:encoded>
+    </item>
+    
+  </channel>
+</rss>

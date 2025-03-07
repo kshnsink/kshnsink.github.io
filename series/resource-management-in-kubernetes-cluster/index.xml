@@ -5,12 +5,11 @@
     <link>http://kishansharma.in/series/resource-management-in-kubernetes-cluster/</link>
     <description>Recent content in Resource Management in Kubernetes Cluster on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kishansharma.in/series/resource-management-in-kubernetes-cluster/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="http://kishansharma.in/series/resource-management-in-kubernetes-cluster/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Resource Mangement in Kubernetes Cluster: Sizing a Kubernetes Cluster</title>
       <link>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</link>
-      <pubDate>Sun, 18 Jun 2023 02:19:35 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clustersizing-a-kubernetes-cluster/</guid>
       <description>Sizing a Kubernetes cluster with an example</description>
@@ -102,7 +101,7 @@
     <item>
       <title>Resource Management in Kubernetes Cluster: Isolation Using Namespaces</title>
       <link>http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</link>
-      <pubDate>Mon, 29 May 2023 09:55:51 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://kishansharma.in/posts/resource-management-in-kubernetes-clusterisolation-using-namespaces/</guid>
       <description>Understanding Isolation using Namespaces in Kubernetes</description>
@@ -238,7 +237,7 @@
     <item>
       <title>Resource Management in Kubernetes Cluster: Understanding Resources</title>
       <link>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</link>
-      <pubDate>Thu, 11 May 2023 03:52:06 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://kishansharma.in/posts/resource-mangement-in-kubernetes-clusterunderstanding-resources/</guid>
       <description>Understanding Kubernetes resources and Quality of Service classes</description>

@@ -5,12 +5,11 @@
     <link>http://kishansharma.in/series/</link>
     <description>Recent content in Series on Kishan&#39;s World</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jun 2023 02:19:35 +0530</lastBuildDate><atom:link href="http://kishansharma.in/series/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="http://kishansharma.in/series/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Resource Management in Kubernetes Cluster</title>
       <link>http://kishansharma.in/series/resource-management-in-kubernetes-cluster/</link>
-      <pubDate>Sun, 18 Jun 2023 02:19:35 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://kishansharma.in/series/resource-management-in-kubernetes-cluster/</guid>
       <description></description>
@@ -20,7 +19,7 @@
     <item>
       <title>Tuning Postgres using Indexes</title>
       <link>http://kishansharma.in/series/tuning-postgres-using-indexes/</link>
-      <pubDate>Sun, 26 Mar 2023 02:09:41 +0530</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://kishansharma.in/series/tuning-postgres-using-indexes/</guid>
       <description></description>
